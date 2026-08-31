@@ -1,0 +1,54 @@
+{% load icons %}
+{% if hero %}
+<section class="hero">
+  <div class="hero__shape hero__shape--green" aria-hidden="true"></div>
+  <div class="hero__shape hero__shape--gold" aria-hidden="true"></div>
+  <div class="container hero__grid">
+    <div class="hero__copy">
+      {% if hero.badge_text %}
+      <div class="hero__badge"><span class="dot"></span>{{ hero.badge_text }}</div>
+      {% endif %}
+      <h1>{{ hero.headline }}</h1>
+      <p class="lead">{{ hero.subheadline }}</p>
+      <div class="hero__actions">
+        {% if hero.primary_cta_text %}
+        <a href="{{ hero.primary_cta_url|default:'#' }}" class="btn btn-primary">{{ hero.primary_cta_text }}{% icon 'arrow-right' %}</a>
+        {% endif %}
+        {% if hero.secondary_cta_text %}
+        <a href="{{ hero.secondary_cta_url|default:'#' }}" class="btn btn-outline-gold">{{ hero.secondary_cta_text }}</a>
+        {% endif %}
+      </div>
+      {% if hero.stat1_value or hero.stat2_value or hero.stat3_value %}
+      <div class="hero__meta">
+        {% if hero.stat1_value %}<div><strong>{{ hero.stat1_value }}</strong><span>{{ hero.stat1_label }}</span></div>{% endif %}
+        {% if hero.stat2_value %}<div><strong>{{ hero.stat2_value }}</strong><span>{{ hero.stat2_label }}</span></div>{% endif %}
+        {% if hero.stat3_value %}<div><strong>{{ hero.stat3_value }}</strong><span>{{ hero.stat3_label }}</span></div>{% endif %}
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="hero__collage">
+      <span class="hero__collage-num">01</span>
+      <div class="hero__collage-main hero-visual">
+        {% if hero.background_image %}
+        <img src="{{ hero.background_image.url }}" alt="{{ hero.headline }}" loading="eager">
+        {% endif %}
+      </div>
+      {% if hero_secondary_image %}
+      <div class="hero__collage-secondary">
+        <img src="{{ hero_secondary_image.image.url }}" alt="{{ hero_secondary_image.alt_text|default:hero.headline }}" loading="eager">
+      </div>
+      {% endif %}
+      {% if hero.collage_label_title %}
+      <div class="hero__collage-label">
+        {% icon 'graduation-cap' 'icon' %}
+        <div>
+          <strong>{{ hero.collage_label_title }}</strong>
+          {% if hero.collage_label_subtitle %}<span>{{ hero.collage_label_subtitle }}</span>{% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endif %}

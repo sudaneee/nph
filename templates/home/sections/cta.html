@@ -1,0 +1,19 @@
+{% load icons %}
+{% if cta_section %}
+<section class="section-pad">
+  <div class="container">
+    <div class="cta-band reveal">
+      <h2>{{ section.title|default:cta_section.title }}</h2>
+      <p>{{ section.description|default:cta_section.subtitle }}</p>
+      <div class="hero__actions">
+        {% if cta_section.primary_button_text %}
+        <a href="{{ cta_section.primary_button_url|default:'/contact/' }}" class="btn btn-gold">{{ cta_section.primary_button_text }}{% icon 'arrow-right' %}</a>
+        {% endif %}
+        {% if cta_section.secondary_button_text %}
+        <a href="{{ cta_section.secondary_button_url|default:'/contact/' }}" class="btn btn-outline-gold">{{ cta_section.secondary_button_text }}</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}

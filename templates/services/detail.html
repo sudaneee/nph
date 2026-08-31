@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load icons %}
+
+{% block seo_title %}{{ seo_title }} — {{ site_settings.site_name }}{% endblock %}
+{% block seo_description %}{{ seo_description }}{% endblock %}
+{% block seo_robots %}<meta name="robots" content="{% if service.robots_index %}index{% else %}noindex{% endif %}, {% if service.robots_follow %}follow{% else %}nofollow{% endif %}">{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' with title=service.name lead=service.short_description crumbs=crumbs %}
+
+<section class="section-pad">
+  <div class="container">
+    <div class="service-detail-hero">
+      <div class="service-detail-media reveal">
+        {% if service.image %}<img src="{{ service.image.url }}" alt="{{ service.name }}">{% endif %}
+      </div>
+      <div class="reveal">
+        {% if service.features.all %}
+        <h3 class="mb-sm">What's Included</h3>
+        <ul class="feature-list">
+          {% for feature in service.features.all %}
+          <li>{% icon 'check' %}<span>{{ feature.text }}</span></li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        <a href="{{ service.get_cta_url }}" class="btn btn-primary mt-lg">{{ service.cta_text }}{% icon 'arrow-right' %}</a>
+      </div>
+    </div>
+
+    <div class="rich-content mt-xl">
+      {{ service.detailed_description|safe }}
+    </div>
+  </div>
+</section>
+
+{% if other_services %}
+<section class="section-pad section-paper">
+  <div class="container">
+    <span class="eyebrow">Explore More</span>
+    <h2 class="mt-sm">Other Services</h2>
+    <div class="card-grid">
+      {% for other in other_services %}
+      <article class="content-card">
+        <div class="content-card__media">
+          {% if other.image %}<img src="{{ other.image.url }}" alt="{{ other.name }}">{% endif %}
+        </div>
+        <div class="content-card__body">
+          <h3>{{ other.name }}</h3>
+          <p>{{ other.short_description }}</p>
+          <div class="content-card__footer"><a href="{{ other.get_absolute_url }}" class="btn-ghost btn">Learn more{% icon 'arrow-right' %}</a></div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% include 'home/sections/cta.html' %}
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load icons %}
+
+{% block seo_title %}{{ seo_title }} — {{ site_settings.site_name }}{% endblock %}
+{% block seo_description %}{{ seo_description }}{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' with title=opportunity.title lead=opportunity.short_description crumbs=crumbs %}
+
+<section class="section-pad">
+  <div class="container">
+    <div class="program-detail-grid">
+      <div class="reveal">
+        {% if opportunity.image %}
+        <div class="service-detail-media mb-lg"><img src="{{ opportunity.image.url }}" alt="{{ opportunity.title }}"></div>
+        {% endif %}
+        <div class="rich-content">{{ opportunity.full_description|safe }}</div>
+
+        {% if opportunity.gallery.all %}
+        <h3 class="mt-xl mb-sm">Gallery</h3>
+        <div class="program-gallery">
+          {% for img in opportunity.gallery.all %}
+          <img src="{{ img.image.url }}" alt="{{ img.caption|default:opportunity.title }}" loading="lazy">
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <aside class="sidebar-card reveal">
+        <span class="badge {% if not opportunity.is_open %}badge-outline{% endif %}">{% if opportunity.is_open %}Open for Applications{% else %}Closed{% endif %}</span>
+        <h3 class="mt-sm">Details</h3>
+        <ul class="program-meta-list mt-md">
+          {% if opportunity.application_deadline %}<li>{% icon 'clock' %}Apply by {{ opportunity.application_deadline|date:"M j, Y" }}</li>{% endif %}
+          {% if opportunity.location %}<li>{% icon 'location' %}{{ opportunity.location }}</li>{% endif %}
+          <li>{% icon 'award' %}Status: {{ opportunity.get_status_display }}</li>
+        </ul>
+        {% if opportunity.is_open %}
+        <a href="{{ opportunity.get_cta_url }}" class="btn btn-primary" {% if opportunity.external_application_url %}target="_blank" rel="noopener"{% endif %}>{{ opportunity.cta_text }}{% icon 'arrow-right' %}</a>
+        {% else %}
+        <a href="{% url 'contact:contact' %}" class="btn btn-outline">Get Notified of Future Openings</a>
+        {% endif %}
+      </aside>
+    </div>
+  </div>
+</section>
+
+{% if related %}
+<section class="section-pad section-paper">
+  <div class="container">
+    <span class="eyebrow">Related</span>
+    <h2 class="mt-sm">More Opportunities</h2>
+    <div class="card-grid">
+      {% for item in related %}
+      <article class="content-card">
+        <div class="content-card__media">{% if item.image %}<img src="{{ item.image.url }}" alt="{{ item.title }}">{% endif %}</div>
+        <div class="content-card__body">
+          <h3>{{ item.title }}</h3>
+          <p>{{ item.short_description }}</p>
+          <div class="content-card__footer"><a href="{{ item.get_absolute_url }}" class="btn-ghost btn">View details{% icon 'arrow-right' %}</a></div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

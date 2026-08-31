@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load icons %}
+
+{% block seo_title %}Programs — {{ site_settings.site_name }}{% endblock %}
+{% block seo_description %}Training programs, workshops, events and community initiatives from Northpreneur Hub Ltd.{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' with title="Programs" lead="Structured training and initiatives built to move you from skill to sustainable income." crumbs=crumbs %}
+
+<section class="section-pad">
+  <div class="container">
+    {% if page_obj.object_list %}
+    <div class="card-grid">
+      {% for program in page_obj %}
+      <article class="content-card program-card reveal">
+        <div class="content-card__media">
+          <span class="program-card__status badge {% if program.status == 'closed' %}badge-outline{% endif %}">{{ program.get_status_display }}</span>
+          {% if program.image %}<img src="{{ program.image.url }}" alt="{{ program.title }}" loading="lazy">{% endif %}
+        </div>
+        <div class="content-card__body">
+          <div class="content-card__meta">
+            <span class="badge">{{ program.get_program_type_display }}</span>
+            {% if program.location %}<span>{% icon 'location' 'icon' %} {{ program.location }}</span>{% endif %}
+          </div>
+          <h3>{{ program.title }}</h3>
+          <p>{{ program.short_description }}</p>
+          <div class="content-card__footer">
+            <a href="{{ program.get_absolute_url }}" class="btn-ghost btn">Learn more{% icon 'arrow-right' %}</a>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% include 'partials/pagination.html' %}
+    {% else %}
+    <div class="empty-state">{% icon 'calendar' %}<p>No programs are currently listed. Check back soon.</p></div>
+    {% endif %}
+  </div>
+</section>
+
+{% include 'home/sections/cta.html' %}
+{% endblock %}

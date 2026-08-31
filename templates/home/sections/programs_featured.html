@@ -1,0 +1,50 @@
+{% load icons %}
+{% if featured_programs %}
+<section class="section-pad section-paper">
+  <div class="container">
+    <div class="flex-between" style="flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <span class="eyebrow">Get Involved</span>
+        <h2 class="mt-sm">{{ section.title|default:'Programs &amp; Opportunities' }}</h2>
+      </div>
+      <a href="{% url 'programs:program_list' %}" class="btn btn-outline-gold">View All{% icon 'arrow-right' %}</a>
+    </div>
+
+    {% with featured=featured_programs.0 %}
+    {% if featured %}
+    <article class="editorial-feature reveal">
+      <div class="editorial-feature__media">
+        {% if featured.image %}<img src="{{ featured.image.url }}" alt="{{ featured.title }}" loading="lazy">{% endif %}
+      </div>
+      <div>
+        <span class="badge">{{ featured.get_program_type_display }}</span>
+        <h3>{{ featured.title }}</h3>
+        <p>{{ featured.short_description }}</p>
+        <a href="{{ featured.get_absolute_url }}" class="btn btn-primary mt-md">Learn More{% icon 'arrow-right' %}</a>
+      </div>
+    </article>
+    {% endif %}
+    {% endwith %}
+
+    {% if featured_programs|length > 1 %}
+    <div class="card-grid">
+      {% for program in featured_programs|slice:"1:" %}
+      <article class="content-card reveal">
+        <div class="content-card__media">
+          {% if program.image %}<img src="{{ program.image.url }}" alt="{{ program.title }}" loading="lazy">{% endif %}
+        </div>
+        <div class="content-card__body">
+          <div class="content-card__meta"><span class="badge">{{ program.get_program_type_display }}</span></div>
+          <h3>{{ program.title }}</h3>
+          <p>{{ program.short_description }}</p>
+          <div class="content-card__footer">
+            <a href="{{ program.get_absolute_url }}" class="btn-ghost btn">Learn more{% icon 'arrow-right' %}</a>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}

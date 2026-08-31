@@ -1,0 +1,69 @@
+{% load icons %}
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <a href="{% url 'sitecore:home' %}" class="logo" style="margin-bottom: 1rem; display:inline-flex;">
+          {% if site_settings.logo_dark %}
+            <img src="{{ site_settings.logo_dark.url }}" alt="{{ site_settings.site_name }}" style="height:36px;">
+          {% elif site_settings.logo %}
+            <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}" style="height:36px;">
+          {% else %}
+            <span class="logotype" style="color:#fff;">NORTHPRENEUR<span style="color: var(--color-gold);">&nbsp;HUB</span></span>
+          {% endif %}
+        </a>
+        <p>{{ site_settings.footer_about|default:site_settings.tagline }}</p>
+        <div class="social-row mt-md">
+          {% for social in social_links %}
+          <a href="{{ social.url }}" target="_blank" rel="noopener" aria-label="{{ social.get_platform_display }}">
+            {% icon social.icon_key %}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          {% for link in footer_links %}{% if link.group == 'company' %}
+          <li><a href="{{ link.url }}">{{ link.label }}</a></li>
+          {% endif %}{% endfor %}
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <ul>
+          {% for link in footer_links %}{% if link.group == 'services' or link.group == 'programs' %}
+          <li><a href="{{ link.url }}">{{ link.label }}</a></li>
+          {% endif %}{% endfor %}
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Stay Connected</h4>
+        <p style="font-size: var(--fs-small); margin-bottom: 0.8rem;">Get updates on new programs and opportunities.</p>
+        <form class="newsletter-form" action="{% url 'contact:newsletter_subscribe' %}" method="post" data-validate>
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <input type="hidden" name="name" value="">
+          <label class="sr-only" for="footer-newsletter-email">Email address</label>
+          <input id="footer-newsletter-email" type="email" name="email" placeholder="Your email" required>
+          <button type="submit">Join</button>
+        </form>
+        {% if site_settings.phone_primary %}
+        <p class="mt-md" style="font-size: var(--fs-small);">{% icon 'phone' 'icon' %} {{ site_settings.phone_primary }}</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>{% if site_settings.copyright_text %}{{ site_settings.copyright_text }}{% else %}&copy; {% now "Y" %} {{ site_settings.site_name }}. All rights reserved.{% endif %}</span>
+      <div class="flex gap-md">
+        {% for link in footer_links %}{% if link.group == 'legal' %}
+        <a href="{{ link.url }}">{{ link.label }}</a>
+        {% endif %}{% endfor %}
+      </div>
+    </div>
+  </div>
+</footer>

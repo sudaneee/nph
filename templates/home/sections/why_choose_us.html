@@ -1,0 +1,20 @@
+{% load icons %}
+{% if why_choose_features %}
+<section class="section-pad">
+  <div class="container">
+    <span class="eyebrow">The Northpreneur Difference</span>
+    <h2 class="mt-sm">{{ section.title|default:'Why Choose Northpreneur Hub' }}</h2>
+
+    <div class="why-grid">
+      {% for feature in why_choose_features %}
+      <div class="why-item reveal">
+        <span class="why-item__num">{{ forloop.counter|stringformat:"02d" }}</span>
+        {% icon feature.icon %}
+        <h3>{{ feature.title }}</h3>
+        {% if feature.description %}<p>{{ feature.description }}</p>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}

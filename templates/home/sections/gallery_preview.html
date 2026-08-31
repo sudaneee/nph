@@ -1,0 +1,21 @@
+{% if featured_gallery_images %}
+<section class="section-pad section-paper">
+  <div class="container">
+    <div class="flex-between" style="flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <span class="eyebrow">Stories In Motion</span>
+        <h2 class="mt-sm">{{ section.title|default:'Moments from across Northpreneur Hub' }}</h2>
+      </div>
+      <a href="{% url 'sitecore:gallery' %}" class="btn btn-outline-gold">View Full Gallery</a>
+    </div>
+
+    <div class="gallery-preview-grid">
+      {% for photo in featured_gallery_images %}
+      <a href="{% url 'sitecore:gallery' %}" class="gallery-preview-item reveal">
+        <img src="{{ photo.image.url }}" alt="{{ photo.alt_text|default:photo.title }}" loading="lazy">
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}

@@ -1,0 +1,19 @@
+{% comment %}
+Usage: {% include 'partials/page_header.html' with title="..." lead="..." crumbs=crumbs %}
+crumbs: list of (label, url|None) tuples — last item should have url=None
+{% endcomment %}
+<header class="page-header">
+  <div class="container">
+    {% if crumbs %}
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="{% url 'sitecore:home' %}">Home</a>
+      {% for label, url in crumbs %}
+        <span>/</span>
+        {% if url %}<a href="{{ url }}">{{ label }}</a>{% else %}<span aria-current="page">{{ label }}</span>{% endif %}
+      {% endfor %}
+    </nav>
+    {% endif %}
+    <h1>{{ title }}</h1>
+    {% if lead %}<p class="lead">{{ lead }}</p>{% endif %}
+  </div>
+</header>

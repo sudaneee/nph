@@ -1,0 +1,24 @@
+{% load icons %}
+{% if target_audiences %}
+<section class="section-pad section-paper audience-wrap">
+  <div class="container">
+    <span class="eyebrow">Who We Serve</span>
+    <h2 class="audience-statement mt-sm">{{ section.title|default:'Built for people who want to create opportunities.' }}</h2>
+    {% if section.description %}<p class="lead mt-sm">{{ section.description }}</p>{% endif %}
+
+    {% if audience_photos %}
+    <div class="audience-photostrip">
+      {% for photo in audience_photos %}
+      <img src="{{ photo.image.url }}" alt="{{ photo.alt_text|default:photo.title }}" loading="lazy">
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="audience-cloud">
+      {% for audience in target_audiences %}
+      <span class="audience-chip reveal">{% icon audience.icon %}{{ audience.name }}</span>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}

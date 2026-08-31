@@ -1,0 +1,29 @@
+{% load icons %}
+<section class="section-pad">
+  <div class="container">
+    <div class="about-split">
+      <div class="about-split__media reveal">
+        {% if section.image %}
+        <img src="{{ section.image.url }}" alt="{{ section.title|default:'Northpreneur Hub team at work' }}">
+        {% elif about_page.image %}
+        <img src="{{ about_page.image.url }}" alt="Northpreneur Hub team at work">
+        {% endif %}
+        <div class="about-split__stat">
+          <strong>4</strong>
+          <span>Focus Areas</span>
+        </div>
+      </div>
+      <div class="reveal">
+        <span class="eyebrow">Who We Are</span>
+        <h2 class="mt-sm">{{ section.title|default:'Bridging the gap between talent and opportunity' }}</h2>
+        {% if section.description %}
+        <p class="lead mt-md">{{ section.description }}</p>
+        {% else %}
+        <p class="lead mt-md">NORTHPRENEUR HUB LTD is a forward-thinking digital empowerment and business development company committed to transforming lives across Northern Nigeria through innovation, entrepreneurship, and digital opportunities.</p>
+        <p class="mt-sm">We focus on equipping individuals — especially youths, women, students, and aspiring entrepreneurs — with practical digital skills, business knowledge, and income-generating opportunities that create sustainable income.</p>
+        {% endif %}
+        <a href="{% url 'pages:about' %}" class="btn btn-primary mt-lg">Our Story{% icon 'arrow-right' %}</a>
+      </div>
+    </div>
+  </div>
+</section>

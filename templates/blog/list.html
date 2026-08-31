@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load icons %}
+
+{% block seo_title %}Insights — {{ site_settings.site_name }}{% endblock %}
+{% block seo_description %}News, announcements and insights from Northpreneur Hub Ltd.{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' with title="Insights" lead="News, announcements and stories from across Northpreneur Hub." crumbs=crumbs %}
+
+<section class="section-pad-sm">
+  <div class="container">
+    {% if categories %}
+    <div class="blog-filter-bar">
+      <a href="{% url 'blog:list' %}" class="{% if not active_category %}is-active{% endif %}">All</a>
+      {% for category in categories %}
+      <a href="{% url 'blog:category' category.slug %}" class="{% if active_category == category %}is-active{% endif %}">{{ category.name }}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="section-pad-sm">
+  <div class="container">
+    {% if page_obj.object_list %}
+    <div class="card-grid">
+      {% for post in page_obj %}
+      <article class="content-card reveal">
+        <div class="content-card__media">
+          {% if post.featured_image %}<img src="{{ post.featured_image.url }}" alt="{{ post.title }}" loading="lazy">{% endif %}
+        </div>
+        <div class="content-card__body">
+          <div class="content-card__meta">
+            {% if post.category %}<span>{{ post.category.name }}</span>{% endif %}
+            <span>{{ post.published_date|date:"M j, Y" }}</span>
+            <span>{{ post.reading_time }} min read</span>
+          </div>
+          <h3>{{ post.title }}</h3>
+          <p>{{ post.excerpt }}</p>
+          <div class="content-card__footer">
+            <a href="{{ post.get_absolute_url }}" class="btn-ghost btn">Read Article{% icon 'arrow-right' %}</a>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% include 'partials/pagination.html' %}
+    {% else %}
+    <div class="empty-state">{% icon 'megaphone' %}<p>No articles published yet. Check back soon.</p></div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

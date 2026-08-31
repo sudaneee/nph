@@ -1,0 +1,48 @@
+{% load static icons %}<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{% include 'partials/seo_meta.html' %}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="{% static 'css/tokens.css' %}">
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
+<link rel="stylesheet" href="{% static 'css/components.css' %}">
+<link rel="stylesheet" href="{% static 'css/animations.css' %}">
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<link rel="stylesheet" href="{% static 'css/pages.css' %}">
+<link rel="stylesheet" href="{% static 'css/gallery.css' %}">
+{% if site_settings.favicon %}<link rel="icon" type="image/png" href="{{ site_settings.favicon.url }}">{% endif %}
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+<div class="scroll-progress" aria-hidden="true"></div>
+
+{% if messages %}
+<div class="messages">
+  {% for message in messages %}
+  <div class="message {{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% include 'partials/navbar.html' %}
+
+<main id="main">
+{% block content %}{% endblock %}
+</main>
+
+{% include 'partials/footer.html' %}
+
+<button class="back-to-top" aria-label="Back to top">
+  {% icon 'arrow-up' 'icon' %}
+</button>
+
+<script src="{% static 'js/main.js' %}" defer></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

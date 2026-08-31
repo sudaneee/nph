@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block seo_title %}{{ site_settings.site_name }} — {{ site_settings.tagline }}{% endblock %}
+{% block seo_description %}{{ site_settings.default_meta_description|default:site_settings.tagline }}{% endblock %}
+
+{% block content %}
+
+{% include 'home/sections/hero.html' %}
+
+{% for section in sections %}
+  {% if section.section_type == 'trust_strip' %}{% include 'home/sections/trust_strip.html' %}
+  {% elif section.section_type == 'about' %}{% include 'home/sections/about.html' %}
+  {% elif section.section_type == 'mission_vision' %}{% include 'home/sections/mission_vision.html' %}
+  {% elif section.section_type == 'services' %}{% include 'home/sections/services.html' %}
+  {% elif section.section_type == 'why_choose_us' %}{% include 'home/sections/why_choose_us.html' %}
+  {% elif section.section_type == 'audience' %}{% include 'home/sections/audience.html' %}
+  {% elif section.section_type == 'core_values' %}{% include 'home/sections/core_values.html' %}
+  {% elif section.section_type == 'image_grid' %}{% include 'home/sections/image_grid.html' %}
+  {% elif section.section_type == 'founder' %}{% include 'home/sections/founder.html' %}
+  {% elif section.section_type == 'impact' %}{% include 'home/sections/impact.html' %}
+  {% elif section.section_type == 'programs_featured' %}{% include 'home/sections/programs_featured.html' %}
+  {% elif section.section_type == 'blog_featured' %}{% include 'home/sections/blog_featured.html' %}
+  {% elif section.section_type == 'gallery_preview' %}{% include 'home/sections/gallery_preview.html' %}
+  {% elif section.section_type == 'cta' %}{% include 'home/sections/cta.html' %}
+  {% endif %}
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load icons %}
+
+{% block seo_title %}Opportunities — {{ site_settings.site_name }}{% endblock %}
+{% block seo_description %}Open opportunities and calls for application from Northpreneur Hub Ltd.{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' with title="Opportunities" lead="Open calls for application — apply while they're live." crumbs=crumbs %}
+
+<section class="section-pad">
+  <div class="container">
+    {% if page_obj.object_list %}
+    <div class="card-grid">
+      {% for opportunity in page_obj %}
+      <article class="content-card program-card reveal">
+        <div class="content-card__media">
+          <span class="program-card__status badge {% if not opportunity.is_open %}badge-outline{% endif %}">{% if opportunity.is_open %}Open{% else %}Closed{% endif %}</span>
+          {% if opportunity.image %}<img src="{{ opportunity.image.url }}" alt="{{ opportunity.title }}" loading="lazy">{% endif %}
+        </div>
+        <div class="content-card__body">
+          <div class="content-card__meta">
+            <span class="badge">{{ opportunity.get_program_type_display }}</span>
+            {% if opportunity.application_deadline %}<span>{% icon 'clock' 'icon' %} Deadline {{ opportunity.application_deadline|date:"M j, Y" }}</span>{% endif %}
+          </div>
+          <h3>{{ opportunity.title }}</h3>
+          <p>{{ opportunity.short_description }}</p>
+          <div class="content-card__footer">
+            <a href="{{ opportunity.get_absolute_url }}" class="btn-ghost btn">View Details{% icon 'arrow-right' %}</a>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% include 'partials/pagination.html' %}
+    {% else %}
+    <div class="empty-state">{% icon 'megaphone' %}<p>No opportunities are currently open. Check back soon.</p></div>
+    {% endif %}
+  </div>
+</section>
+
+{% include 'home/sections/cta.html' %}
+{% endblock %}

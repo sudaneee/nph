@@ -1,0 +1,33 @@
+{% load icons %}
+<header class="site-header">
+  <div class="container site-header__bar">
+    <a href="{% url 'sitecore:home' %}" class="logo">
+      {% if site_settings.logo %}
+        <img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}">
+      {% else %}
+        <span class="logotype">NORTHPRENEUR<span>&nbsp;HUB</span></span>
+      {% endif %}
+    </a>
+
+    <nav class="main-nav" aria-label="Primary">
+      <div class="main-nav__close">
+        <button class="nav-toggle" id="nav-close-btn" aria-label="Close menu">{% icon 'close' %}</button>
+      </div>
+      <ul class="main-nav__list">
+        {% for item in nav_items %}
+        <li>
+          <a href="{{ item.url }}" class="{% if item.is_cta %}btn btn-primary{% endif %}"
+             {% if item.open_in_new_tab %}target="_blank" rel="noopener"{% endif %}>
+            {{ item.label }}{% if item.is_cta %}{% icon 'arrow-right' %}{% endif %}
+          </a>
+        </li>
+        {% endfor %}
+        <li>
+          <a href="{% url 'sitecore:search' %}" aria-label="Search the site">{% icon 'search' %}</a>
+        </li>
+      </ul>
+    </nav>
+
+    <button class="nav-toggle" id="nav-open-btn" aria-label="Open menu">{% icon 'menu' %}</button>
+  </div>
+</header>

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load icons %}
+
+{% block seo_title %}Services — {{ site_settings.site_name }}{% endblock %}
+{% block seo_description %}Digital skills training, entrepreneurship development, corporate training and consulting from Northpreneur Hub Ltd.{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' with title="Our Services" lead="Practical, result-oriented programs designed to turn skills into sustainable income." crumbs=crumbs %}
+
+<section class="section-pad">
+  <div class="container">
+    {% if services %}
+    <div class="service-list-grid">
+      {% for service in services %}
+      <article class="card service-card reveal">
+        <div class="service-card__icon">{% icon service.icon %}</div>
+        <h3>{{ service.name }}</h3>
+        <p>{{ service.short_description }}</p>
+        {% if service.features.all %}
+        <ul class="feature-list">
+          {% for feature in service.features.all|slice:":4" %}
+          <li>{% icon 'check' %}<span>{{ feature.text }}</span></li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        <div class="service-card__footer">
+          <a href="{{ service.get_absolute_url }}" class="btn btn-primary btn-sm">{{ service.cta_text }}{% icon 'arrow-right' %}</a>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">{% icon 'business' %}<p>Services will appear here shortly.</p></div>
+    {% endif %}
+  </div>
+</section>
+
+{% include 'home/sections/cta.html' %}
+{% endblock %}

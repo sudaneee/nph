@@ -1,0 +1,20 @@
+{% load icons %}
+{% if impact_statistics %}
+<section class="section-pad section-paper">
+  <div class="container">
+    <span class="eyebrow">Our Impact</span>
+    <h2 class="mt-sm">{{ section.title|default:'Measurable change, one entrepreneur at a time' }}</h2>
+
+    <div class="impact-grid">
+      {% for stat in impact_statistics %}
+      <div class="impact-item reveal">
+        <span class="impact-item__num">{{ forloop.counter|stringformat:"02d" }}</span>
+        <span class="stat-num" data-counter="{{ stat.number }}">{{ stat.number }}</span>
+        <span class="stat-label">{{ stat.label }}</span>
+        {% if stat.description %}<span class="stat-desc">{{ stat.description }}</span>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}

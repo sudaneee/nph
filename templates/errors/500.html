@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load icons %}
+
+{% block seo_title %}Something Went Wrong — {{ site_settings.site_name }}{% endblock %}
+{% block seo_robots %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+
+{% block content %}
+<section class="container error-page">
+  <div>
+    <span class="code">500</span>
+    <h2 class="mt-md">Something went wrong on our end.</h2>
+    <p class="lead mt-sm" style="margin-inline:auto;">We've been notified and are looking into it. Please try again shortly.</p>
+    <div class="hero__actions" style="justify-content:center; margin-top: var(--space-lg);">
+      <a href="{% url 'sitecore:home' %}" class="btn btn-primary">Back to Home{% icon 'arrow-right' %}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

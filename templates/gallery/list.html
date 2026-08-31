@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load icons %}
+
+{% block seo_title %}Gallery — {{ site_settings.site_name }}{% endblock %}
+{% block seo_description %}Photos from Northpreneur Hub's training sessions, graduations, community engagement and entrepreneurship activities.{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' with title="Gallery" lead="Moments from our training sessions, graduations, community work and entrepreneurship activities." crumbs=crumbs %}
+
+<section class="section-pad">
+  <div class="container">
+    {% if categories %}
+    <div class="gallery-filter-bar" id="gallery-filters">
+      <button type="button" class="{% if not active_category %}is-active{% endif %}" data-category="">All</button>
+      {% for category in categories %}
+      <button type="button" class="{% if active_category == category %}is-active{% endif %}" data-category="{{ category.slug }}">{{ category.name }}</button>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if page_obj.object_list %}
+    <div class="masonry-grid" id="gallery-grid">
+      {% for photo in page_obj %}
+      <div class="masonry-item {% cycle '' '' 'masonry-item--tall' '' 'masonry-item--wide' '' %}"
+           data-category="{{ photo.category.slug }}"
+           data-full="{{ photo.image.url }}"
+           data-title="{{ photo.title|default:photo.category.name }}"
+           data-desc="{{ photo.description|default:photo.caption }}"
+           data-cat-name="{{ photo.category.name }}"
+           tabindex="0" role="button" aria-label="View {{ photo.title|default:'photo' }}">
+        <img src="{{ photo.image.url }}" alt="{{ photo.alt_text|default:photo.title }}" loading="lazy">
+        <div class="masonry-item__info">
+          <strong>{{ photo.title|default:photo.category.name }}</strong>
+          {% if photo.date %}<span>{{ photo.date|date:"M Y" }}</span>{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% include 'partials/pagination.html' %}
+    {% else %}
+    <div class="empty-state">{% icon 'search' %}<p>No photos in this category yet.</p></div>
+    {% endif %}
+  </div>
+</section>
+
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <div class="lightbox__figure">
+    <button class="lightbox__close" id="lightbox-close" aria-label="Close">{% icon 'close' %}</button>
+    <button class="lightbox__prev" id="lightbox-prev" aria-label="Previous photo">{% icon 'arrow-right' 'icon icon-flip' %}</button>
+    <img id="lightbox-img" src="" alt="">
+    <div class="lightbox__caption">
+      <strong id="lightbox-title"></strong>
+      <span id="lightbox-desc"></span>
+    </div>
+    <button class="lightbox__next" id="lightbox-next" aria-label="Next photo">{% icon 'arrow-right' %}</button>
+  </div>
+</div>
+{% endblock %}

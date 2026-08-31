@@ -1,0 +1,31 @@
+{% load icons %}
+{% if values_with_photos %}
+<section class="section-pad">
+  <div class="container">
+    <span class="eyebrow">What We Stand For</span>
+    <h2 class="mt-sm">{{ section.title|default:'Our Core Values' }}</h2>
+
+    <div class="values-wrap">
+      <div class="value-list">
+        {% for pair in values_with_photos %}
+        <button class="value-item {% if forloop.first %}is-active{% endif %}"
+                data-title="{{ pair.value.name }}" data-desc="{{ pair.value.description }}"
+                data-photo="{% if pair.photo %}{{ pair.photo.image.url }}{% endif %}">
+          <span class="value-item__num">{{ forloop.counter|stringformat:"02d" }}</span>
+          {% icon pair.value.icon %}
+          <strong>{{ pair.value.name }}</strong>
+        </button>
+        {% endfor %}
+      </div>
+      <div class="value-display reveal">
+        <div class="value-display__bg">
+          {% if values_with_photos.0.photo %}<img src="{{ values_with_photos.0.photo.image.url }}" alt="" class="value-display__img">{% endif %}
+        </div>
+        <div class="value-display__icon">{% icon values_with_photos.0.value.icon %}</div>
+        <h3 class="value-display__title">{{ values_with_photos.0.value.name }}</h3>
+        <p class="value-display__desc">{{ values_with_photos.0.value.description }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}

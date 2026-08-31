@@ -1,0 +1,53 @@
+{% load icons %}
+{% if featured_posts %}
+<section class="section-pad">
+  <div class="container">
+    <div class="flex-between" style="flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <span class="eyebrow">Insights</span>
+        <h2 class="mt-sm">{{ section.title|default:'Latest From Northpreneur Hub' }}</h2>
+      </div>
+      <a href="{% url 'blog:list' %}" class="btn btn-outline-gold">All Insights{% icon 'arrow-right' %}</a>
+    </div>
+
+    {% with featured=featured_posts.0 %}
+    {% if featured %}
+    <article class="editorial-feature reveal">
+      <div class="editorial-feature__media">
+        {% if featured.featured_image %}<img src="{{ featured.featured_image.url }}" alt="{{ featured.title }}" loading="lazy">{% endif %}
+      </div>
+      <div>
+        {% if featured.category %}<span class="badge">{{ featured.category.name }}</span>{% endif %}
+        <h3>{{ featured.title }}</h3>
+        <p>{{ featured.excerpt }}</p>
+        <a href="{{ featured.get_absolute_url }}" class="btn btn-primary mt-md">Read Article{% icon 'arrow-right' %}</a>
+      </div>
+    </article>
+    {% endif %}
+    {% endwith %}
+
+    {% if featured_posts|length > 1 %}
+    <div class="card-grid">
+      {% for post in featured_posts|slice:"1:" %}
+      <article class="content-card reveal">
+        <div class="content-card__media">
+          {% if post.featured_image %}<img src="{{ post.featured_image.url }}" alt="{{ post.title }}" loading="lazy">{% endif %}
+        </div>
+        <div class="content-card__body">
+          <div class="content-card__meta">
+            {% if post.category %}<span>{{ post.category.name }}</span>{% endif %}
+            <span>{{ post.published_date|date:"M j, Y" }}</span>
+          </div>
+          <h3>{{ post.title }}</h3>
+          <p>{{ post.excerpt }}</p>
+          <div class="content-card__footer">
+            <a href="{{ post.get_absolute_url }}" class="btn-ghost btn">Read Article{% icon 'arrow-right' %}</a>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}

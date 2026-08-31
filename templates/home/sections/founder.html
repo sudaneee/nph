@@ -1,0 +1,28 @@
+{% load icons %}
+{% if founder %}
+<section class="section-pad section-dark" style="background: var(--color-primary-dark);">
+  <div class="container">
+    <div class="founder-wrap">
+      <div class="founder-photo reveal">
+        {% if founder.photo %}<img src="{{ founder.photo.url }}" alt="{{ founder.name }}">{% endif %}
+        <div class="founder-photo__tag">
+          <span>{{ founder.position }}</span>
+          <strong>{{ founder.name }}</strong>
+        </div>
+      </div>
+      <div class="founder-quote reveal">
+        {% icon 'quote' 'icon quote-mark' %}
+        <span class="eyebrow">{{ section.title|default:"Founder's Message" }}</span>
+        <blockquote class="mt-sm">{{ founder.message|striptags|truncatewords:55 }}</blockquote>
+        <div class="founder-quote__by">
+          <div>
+            <strong>{{ founder.name }}</strong>
+            <span>{{ founder.position }}</span>
+          </div>
+        </div>
+        <a href="{% url 'pages:about' %}#founder" class="btn btn-gold mt-lg">Read the Full Message{% icon 'arrow-right' %}</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}

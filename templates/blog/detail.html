@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load icons %}
+
+{% block seo_title %}{{ seo_title }} — {{ site_settings.site_name }}{% endblock %}
+{% block seo_description %}{{ seo_description }}{% endblock %}
+{% block og_image %}{% if post.featured_image %}<meta property="og:image" content="{{ post.featured_image.url }}">{% endif %}{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <div class="container blog-detail-header">
+    <nav class="breadcrumbs flex-center" aria-label="Breadcrumb">
+      <a href="{% url 'sitecore:home' %}">Home</a><span>/</span>
+      <a href="{% url 'blog:list' %}">Insights</a><span>/</span>
+      <span aria-current="page">{{ post.title }}</span>
+    </nav>
+    {% if post.category %}<span class="badge badge-gold mt-md">{{ post.category.name }}</span>{% endif %}
+    <h1 class="mt-sm">{{ post.title }}</h1>
+    <div class="author-row">
+      {% if post.author %}
+        {% if post.author.avatar %}<img src="{{ post.author.avatar.url }}" alt="{{ post.author.name }}">{% endif %}
+        <span>{{ post.author.name }}</span><span>&middot;</span>
+      {% endif %}
+      <span>{{ post.published_date|date:"F j, Y" }}</span><span>&middot;</span>
+      <span>{{ post.reading_time }} min read</span>
+    </div>
+  </div>
+</header>
+
+<section class="section-pad-sm">
+  <div class="container">
+    {% if post.featured_image %}
+    <div class="blog-detail-media"><img src="{{ post.featured_image.url }}" alt="{{ post.title }}"></div>
+    {% endif %}
+    <div class="blog-detail-body rich-content">
+      {{ post.content|safe }}
+    </div>
+    {% if post.tags.all %}
+    <div class="blog-detail-body tag-row">
+      {% for tag in post.tags.all %}<span>#{{ tag.name }}</span>{% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+{% if related %}
+<section class="section-pad section-paper">
+  <div class="container">
+    <span class="eyebrow">Continue Reading</span>
+    <h2 class="mt-sm">Related Articles</h2>
+    <div class="card-grid">
+      {% for item in related %}
+      <article class="content-card">
+        <div class="content-card__media">{% if item.featured_image %}<img src="{{ item.featured_image.url }}" alt="{{ item.title }}">{% endif %}</div>
+        <div class="content-card__body">
+          <h3>{{ item.title }}</h3>
+          <p>{{ item.excerpt }}</p>
+          <div class="content-card__footer"><a href="{{ item.get_absolute_url }}" class="btn-ghost btn">Read Article{% icon 'arrow-right' %}</a></div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

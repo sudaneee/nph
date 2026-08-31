@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load icons %}
+
+{% block seo_title %}{{ seo_title }} — {{ site_settings.site_name }}{% endblock %}
+{% block seo_description %}{{ seo_description }}{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' with title=program.title lead=program.short_description crumbs=crumbs %}
+
+<section class="section-pad">
+  <div class="container">
+    <div class="program-detail-grid">
+      <div class="reveal">
+        {% if program.image %}
+        <div class="service-detail-media mb-lg"><img src="{{ program.image.url }}" alt="{{ program.title }}"></div>
+        {% endif %}
+        <div class="rich-content">{{ program.full_description|safe }}</div>
+
+        {% if program.gallery.all %}
+        <h3 class="mt-xl mb-sm">Gallery</h3>
+        <div class="program-gallery">
+          {% for img in program.gallery.all %}
+          <img src="{{ img.image.url }}" alt="{{ img.caption|default:program.title }}" loading="lazy">
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <aside class="sidebar-card reveal">
+        <span class="badge">{{ program.get_program_type_display }}</span>
+        <h3 class="mt-sm">Details</h3>
+        <ul class="program-meta-list mt-md">
+          {% if program.start_date %}<li>{% icon 'calendar' %}Starts {{ program.start_date|date:"M j, Y" }}</li>{% endif %}
+          {% if program.end_date %}<li>{% icon 'calendar' %}Ends {{ program.end_date|date:"M j, Y" }}</li>{% endif %}
+          {% if program.application_deadline %}<li>{% icon 'clock' %}Apply by {{ program.application_deadline|date:"M j, Y" }}</li>{% endif %}
+          {% if program.location %}<li>{% icon 'location' %}{{ program.location }}</li>{% endif %}
+          <li>{% icon 'award' %}Status: {{ program.get_status_display }}</li>
+        </ul>
+        {% if program.is_open %}
+        <a href="{{ program.get_cta_url }}" class="btn btn-primary" {% if program.external_application_url %}target="_blank" rel="noopener"{% endif %}>{{ program.cta_text }}{% icon 'arrow-right' %}</a>
+        {% else %}
+        <a href="{% url 'contact:contact' %}" class="btn btn-outline">Ask About Future Sessions</a>
+        {% endif %}
+      </aside>
+    </div>
+  </div>
+</section>
+
+{% if related %}
+<section class="section-pad section-paper">
+  <div class="container">
+    <span class="eyebrow">Related</span>
+    <h2 class="mt-sm">More Programs</h2>
+    <div class="card-grid">
+      {% for item in related %}
+      <article class="content-card">
+        <div class="content-card__media">{% if item.image %}<img src="{{ item.image.url }}" alt="{{ item.title }}">{% endif %}</div>
+        <div class="content-card__body">
+          <h3>{{ item.title }}</h3>
+          <p>{{ item.short_description }}</p>
+          <div class="content-card__footer"><a href="{{ item.get_absolute_url }}" class="btn-ghost btn">Learn more{% icon 'arrow-right' %}</a></div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

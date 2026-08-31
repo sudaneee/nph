@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load icons %}
+
+{% block seo_title %}{{ seo_title }} — {{ site_settings.site_name }}{% endblock %}
+{% block seo_description %}{{ seo_description }}{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' with title=about_page.heading lead=site_settings.tagline crumbs=crumbs %}
+
+<section class="section-pad">
+  <div class="container">
+    <div class="about-split">
+      <div class="reveal">
+        {% if gallery_images %}
+        <div class="collage">
+          {% for img in gallery_images %}
+          <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:img.title }}" loading="lazy">
+          {% endfor %}
+        </div>
+        {% elif about_page.image %}
+        <div class="about-split__media"><img src="{{ about_page.image.url }}" alt="{{ about_page.heading }}"></div>
+        {% endif %}
+      </div>
+      <div class="reveal rich-content">
+        {{ about_page.intro|safe }}
+        {% if about_page.cta_text %}
+        <a href="{{ about_page.cta_url|default:'/contact/' }}" class="btn btn-primary mt-md">{{ about_page.cta_text }}{% icon 'arrow-right' %}</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% include 'home/sections/mission_vision.html' %}
+
+{% if why_choose_features %}
+<section class="section-pad">
+  <div class="container">
+    <span class="eyebrow">The Northpreneur Difference</span>
+    <h2 class="mt-sm">Why Choose Northpreneur Hub</h2>
+    <div class="why-grid">
+      {% for feature in why_choose_features %}
+      <div class="why-item reveal">
+        {% icon feature.icon %}
+        <h3>{{ feature.title }}</h3>
+        {% if feature.description %}<p>{{ feature.description }}</p>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if core_values %}
+<section class="section-pad section-paper">
+  <div class="container">
+    <span class="eyebrow">What We Stand For</span>
+    <h2 class="mt-sm">Our Core Values</h2>
+    <div class="grid grid-3 mt-lg">
+      {% for value in core_values %}
+      <div class="card reveal">
+        {% icon value.icon 'icon' %}
+        <h3 class="mt-sm">{{ value.name }}</h3>
+        <p class="mt-xs">{{ value.description }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if founder %}
+<section class="section-pad" id="founder">
+  <div class="container">
+    <div class="founder-wrap">
+      <div class="founder-photo reveal">
+        {% if founder.photo %}<img src="{{ founder.photo.url }}" alt="{{ founder.name }}">{% endif %}
+      </div>
+      <div class="founder-quote reveal">
+        {% icon 'quote' 'icon quote-mark' %}
+        <span class="eyebrow">Founder's Message</span>
+        <div class="rich-content mt-sm" style="font-family: var(--font-display); font-size: 1.15rem;">{{ founder.message|safe }}</div>
+        <div class="founder-quote__by">
+          <div>
+            <strong>{{ founder.name }}</strong>
+            <span>{{ founder.position }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% include 'home/sections/cta.html' %}
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load icons %}
+
+{% block seo_title %}Contact — {{ site_settings.site_name }}{% endblock %}
+{% block seo_description %}Get in touch with Northpreneur Hub Ltd — training, partnerships and enquiries.{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' with title="Let's Talk" lead="Whether you want to join a program, partner with us, or request corporate training — we'd love to hear from you." crumbs=crumbs %}
+
+<section class="section-pad">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="reveal">
+        <span class="eyebrow">Contact Information</span>
+        <h2 class="mt-sm mb-md">Reach Northpreneur Hub</h2>
+
+        {% if site_settings.phone_primary %}
+        <div class="contact-info-item">
+          {% icon 'phone' %}
+          <div>
+            <strong>Phone</strong>
+            <span>{{ site_settings.phone_primary }}{% if site_settings.phone_secondary %} &middot; {{ site_settings.phone_secondary }}{% endif %}</span>
+          </div>
+        </div>
+        {% endif %}
+        {% if site_settings.email %}
+        <div class="contact-info-item">
+          {% icon 'mail' %}
+          <div>
+            <strong>Email</strong>
+            <span><a href="mailto:{{ site_settings.email }}">{{ site_settings.email }}</a></span>
+          </div>
+        </div>
+        {% endif %}
+        {% if site_settings.address %}
+        <div class="contact-info-item">
+          {% icon 'location' %}
+          <div>
+            <strong>Address</strong>
+            <span>{{ site_settings.address }}</span>
+          </div>
+        </div>
+        {% endif %}
+        {% if social_links %}
+        <div class="contact-info-item">
+          {% icon 'globe' %}
+          <div>
+            <strong>Follow Us</strong>
+            <div class="social-row mt-xs" style="filter: invert(1);">
+              {% for social in social_links %}
+              <a href="{{ social.url }}" target="_blank" rel="noopener" aria-label="{{ social.get_platform_display }}" style="border-color: var(--color-border);">{% icon social.icon_key %}</a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if site_settings.map_embed_url %}
+        <div class="map-frame">
+          <iframe src="{{ site_settings.map_embed_url }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Northpreneur Hub location"></iframe>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="card reveal">
+        <h3 class="mb-md">Send a Message</h3>
+        <form method="post" data-validate novalidate>
+          {% csrf_token %}
+          <div class="field-row">
+            <div class="field">
+              <label for="{{ form.name.id_for_label }}">Full Name</label>
+              {{ form.name }}
+              {{ form.name.errors }}
+            </div>
+            <div class="field">
+              <label for="{{ form.email.id_for_label }}">Email</label>
+              {{ form.email }}
+              {{ form.email.errors }}
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="{{ form.phone.id_for_label }}">Phone (optional)</label>
+              {{ form.phone }}
+            </div>
+            <div class="field">
+              <label for="{{ form.organization.id_for_label }}">Organization (optional)</label>
+              {{ form.organization }}
+            </div>
+          </div>
+          <div class="field">
+            <label for="{{ form.subject.id_for_label }}">Subject</label>
+            {{ form.subject }}
+            {{ form.subject.errors }}
+          </div>
+          <div class="field">
+            <label for="{{ form.message.id_for_label }}">Message</label>
+            {{ form.message }}
+            {{ form.message.errors }}
+          </div>
+          <button type="submit" class="btn btn-primary">Send Message{% icon 'arrow-right' %}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% if image_grid_photos %}
+<section class="section-pad">
+  <div class="container">
+    <span class="eyebrow">In The Field</span>
+    <h2 class="mt-sm">{{ section.title|default:'Real people. Real training. Real results.' }}</h2>
+
+    <div class="image-grid">
+      {% for photo in image_grid_photos %}
+      <div class="image-grid__item image-grid__item--{{ photo.slot }} reveal">
+        <img src="{{ photo.image.image.url }}" alt="{{ photo.image.alt_text|default:photo.image.title }}" loading="lazy">
+        {% if photo.image.caption %}<span class="image-grid__caption">{{ photo.image.caption }}</span>{% endif %}
+      </div>
+      {% endfor %}
+      <div class="image-grid__panel reveal">
+        <h3>{{ section.subtitle|default:'Built on real activity, not stock photos.' }}</h3>
+        <p>{{ section.description|default:'Every photo here is from an actual Northpreneur Hub training, graduation or community engagement.' }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}

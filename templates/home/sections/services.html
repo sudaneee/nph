@@ -1,0 +1,49 @@
+{% load icons %}
+{% if services %}
+<section class="section-pad section-paper">
+  <div class="container">
+    <div class="flex-between" style="flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <span class="eyebrow">What We Do</span>
+        <h2 class="mt-sm">{{ section.title|default:'Services built for real, sustainable outcomes' }}</h2>
+      </div>
+      <a href="{% url 'services:list' %}" class="btn btn-outline-gold">All Services{% icon 'arrow-right' %}</a>
+    </div>
+
+    <div class="services-interactive">
+      <div class="service-tabs" role="tablist">
+        {% for service in services %}
+        <button class="service-tab {% if forloop.first %}is-active{% endif %}" data-target="panel-{{ service.id }}" role="tab">
+          <span class="service-tab__num">{{ forloop.counter|stringformat:"02d" }}</span>
+          <span class="service-tab__label">
+            <strong>{{ service.name }}</strong>
+            <span>{{ service.short_description }}</span>
+          </span>
+          {% icon 'arrow-right' %}
+        </button>
+        {% endfor %}
+      </div>
+
+      <div class="service-panels">
+        {% for service in services %}
+        <div class="service-panel {% if forloop.first %}is-active{% endif %}" id="panel-{{ service.id }}">
+          <div class="service-panel__media">
+            {% if service.image %}<img src="{{ service.image.url }}" alt="{{ service.name }}">{% endif %}
+            <span class="service-panel__badge">{{ forloop.counter|stringformat:"02d" }}</span>
+          </div>
+          <p>{{ service.short_description }}</p>
+          {% if service.features.all %}
+          <ul class="service-panel__features">
+            {% for feature in service.features.all %}
+            <li>{% icon 'check' %}{{ feature.text }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          <a href="{{ service.get_absolute_url }}" class="btn-ghost btn">Learn more{% icon 'arrow-right' %}</a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}

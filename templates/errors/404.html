@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load icons %}
+
+{% block seo_title %}Page Not Found — {{ site_settings.site_name }}{% endblock %}
+{% block seo_robots %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+
+{% block content %}
+<section class="container error-page">
+  <div>
+    <span class="code">404</span>
+    <h2 class="mt-md">This page has wandered off.</h2>
+    <p class="lead mt-sm" style="margin-inline:auto;">The page you're looking for doesn't exist or may have moved. Let's get you back on track.</p>
+    <div class="hero__actions" style="justify-content:center; margin-top: var(--space-lg);">
+      <a href="{% url 'sitecore:home' %}" class="btn btn-primary">Back to Home{% icon 'arrow-right' %}</a>
+      <a href="{% url 'sitecore:search' %}" class="btn btn-outline">Search the Site</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
