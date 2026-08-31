@@ -117,10 +117,13 @@ LOGIN_URL = '/admin/login/'
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
-if not DEBUG:
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
+# Decoupled from DEBUG on purpose: a freshly deployed prod site often runs DEBUG=False
+# behind plain HTTP for a while (DNS/cert not live yet) — forcing Secure cookies at that
+# point silently breaks admin login and CSRF everywhere. Flip SECURE_SSL_REDIRECT (and
+# leave these at their default True) once HTTPS is actually serving the site.
+SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=not DEBUG, cast=bool)
+CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default=not DEBUG, cast=bool)
+SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
 
 # Email — contact form notifications (falls back to console backend in dev)
 EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
