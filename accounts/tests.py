@@ -68,3 +68,40 @@ class SignUpLoginTests(TestCase):
         from django.core import mail
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn('/account/reset/', mail.outbox[0].body)
+
+
+class PortalLayoutTests(TestCase):
+    """Logged-in students get the learning portal's sidebar; visitors keep the site header."""
+
+    def setUp(self):
+        from learning.tests import make_course
+        self.course, _, _ = make_course()
+        self.user = User.objects.create_user('s', email='s@example.com', password='pw', first_name='Musa')
+
+    def test_visitor_sees_site_header_not_sidebar(self):
+        resp = self.client.get(reverse('learning:course_list'))
+        self.assertContains(resp, 'site-header')
+        self.assertNotContains(resp, 'portal-sidebar')
+
+    def test_student_pages_use_sidebar_with_active_item(self):
+        self.client.force_login(self.user)
+        for name in ('accounts:dashboard', 'accounts:profile', 'accounts:certificates', 'learning:course_list'):
+            resp = self.client.get(reverse(name))
+            self.assertContains(resp, 'portal-sidebar', msg_prefix=name)
+            self.assertNotContains(resp, 'site-header', msg_prefix=name)
+        resp = self.client.get(reverse('learning:course_list'))
+        self.assertContains(resp, f'href="{reverse("learning:course_list")}" class="is-active"')
+
+    def test_certificates_page_lists_only_own_certificates(self):
+        from learning.models import Certificate, Enrollment
+        other = User.objects.create_user('o', email='o@example.com', password='pw')
+        Certificate.objects.create(enrollment=Enrollment.objects.create(user=self.user, course=self.course),
+                                   student_name='Musa', course_title='Mine')
+        from learning.models import Course
+        c2 = Course.objects.create(title='Other', slug='other', short_description='s', full_description='d', published=True)
+        Certificate.objects.create(enrollment=Enrollment.objects.create(user=other, course=c2),
+                                   student_name='O', course_title='Theirs')
+        self.client.force_login(self.user)
+        resp = self.client.get(reverse('accounts:certificates'))
+        self.assertContains(resp, 'Mine')
+        self.assertNotContains(resp, 'Theirs')

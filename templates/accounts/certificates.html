@@ -1,0 +1,29 @@
+{% extends 'learning/portal_base.html' %}
+{% load icons %}
+
+{% block seo_title %}My Certificates — {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' with title="My Certificates" lead="Certificates you've earned by completing courses." crumbs=crumbs %}
+
+<section class="section-pad">
+  <div class="container">
+    {% if certs %}
+    <div class="cert-grid">
+      {% for cert in certs %}
+      <article class="card cert-card">
+        <span class="cert-card__icon">{% icon 'award' %}</span>
+        <h3>{{ cert.course_title }}</h3>
+        <p class="text-muted">Issued {{ cert.issued_at|date:"F j, Y" }} · ID {{ cert.code }}</p>
+        <a href="{{ cert.get_absolute_url }}" class="btn btn-outline-gold btn-sm">View &amp; print{% icon 'arrow-right' %}</a>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">{% icon 'award' %}<p>No certificates yet — finish a course and pass its quizzes to earn one.</p>
+      <a href="{% url 'accounts:dashboard' %}" class="btn btn-primary mt-md">Go to My Learning{% icon 'arrow-right' %}</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

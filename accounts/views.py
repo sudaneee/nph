@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.utils.http import url_has_allowed_host_and_scheme
 
-from learning.models import Enrollment
+from learning.models import Certificate, Enrollment
 from .forms import SignUpForm, ProfileForm
 from .models import Profile
 
@@ -38,6 +38,14 @@ def dashboard(request):
     rows = [(e, e.progress_percent()) for e in enrollments]
     return render(request, 'accounts/dashboard.html', {
         'rows': rows, 'crumbs': [('My Learning', None)],
+    })
+
+
+@login_required
+def certificates(request):
+    certs = Certificate.objects.filter(enrollment__user=request.user).order_by('-issued_at')
+    return render(request, 'accounts/certificates.html', {
+        'certs': certs, 'crumbs': [('My Learning', '/account/'), ('Certificates', None)],
     })
 
 

@@ -1,0 +1,96 @@
+{% load static icons %}<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{% include 'partials/seo_meta.html' %}
+<meta name="robots" content="noindex, follow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="{% static 'css/tokens.css' %}">
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
+<link rel="stylesheet" href="{% static 'css/components.css' %}">
+<link rel="stylesheet" href="{% static 'css/animations.css' %}">
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<link rel="stylesheet" href="{% static 'css/pages.css' %}">
+<link rel="stylesheet" href="{% static 'css/learning.css' %}">
+{% if site_settings.favicon %}<link rel="icon" type="image/png" href="{{ site_settings.favicon.url }}">{% endif %}
+{% block extra_head %}{% endblock %}
+</head>
+<body class="portal-body">
+{% with vn=request.resolver_match.view_name %}
+<div class="portal" id="portal">
+  <aside class="portal-sidebar" id="portal-sidebar" aria-label="Student navigation">
+    <div class="portal-sidebar__brand">
+      <a href="{% url 'accounts:dashboard' %}" class="logo">
+        {% if site_settings.logo %}<img src="{{ site_settings.logo.url }}" alt="{{ site_settings.site_name }}">
+        {% else %}<span class="logotype">NORTHPRENEUR<span>&nbsp;HUB</span></span>{% endif %}
+      </a>
+      <span class="portal-sidebar__tag">Learning</span>
+      <button type="button" class="portal-sidebar__close" data-portal-close aria-label="Close menu">{% icon 'close' %}</button>
+    </div>
+
+    <nav class="portal-nav">
+      <a href="{% url 'accounts:dashboard' %}" class="{% if vn == 'accounts:dashboard' or vn == 'learning:lesson' or vn == 'learning:quiz' %}is-active{% endif %}">{% icon 'book' %}My Learning</a>
+      <a href="{% url 'learning:course_list' %}" class="{% if vn == 'learning:course_list' or vn == 'learning:course_detail' %}is-active{% endif %}">{% icon 'graduation-cap' %}Browse Courses</a>
+      <a href="{% url 'accounts:certificates' %}" class="{% if vn == 'accounts:certificates' or vn == 'learning:certificate_verify' %}is-active{% endif %}">{% icon 'award' %}My Certificates</a>
+      <a href="{% url 'accounts:profile' %}" class="{% if vn == 'accounts:profile' %}is-active{% endif %}">{% icon 'user' %}Profile</a>
+    </nav>
+
+    <div class="portal-sidebar__footer">
+      <a href="{% url 'sitecore:home' %}" class="portal-nav__plain">{% icon 'globe' %}Main website</a>
+      <form method="post" action="{% url 'accounts:logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="portal-nav__plain">{% icon 'arrow-right' %}Log out</button>
+      </form>
+      <div class="portal-user">
+        <span class="portal-user__avatar" aria-hidden="true">{{ user.first_name|default:user.email|slice:":1"|upper }}</span>
+        <span class="portal-user__text"><strong>{{ user.get_full_name|default:user.email }}</strong><small>{{ user.email }}</small></span>
+      </div>
+    </div>
+  </aside>
+  <div class="portal-overlay" data-portal-close></div>
+
+  <div class="portal-main">
+    <header class="portal-topbar">
+      <button type="button" class="portal-topbar__menu" id="portal-open" aria-label="Open menu" aria-controls="portal-sidebar" aria-expanded="false">{% icon 'menu' %}</button>
+      <a href="{% url 'accounts:dashboard' %}" class="portal-topbar__title">My Learning</a>
+      <span class="portal-user__avatar" aria-hidden="true">{{ user.first_name|default:user.email|slice:":1"|upper }}</span>
+    </header>
+
+    {% if messages %}
+    <div class="messages">
+      {% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}
+    </div>
+    {% endif %}
+
+    <main id="main" class="portal-content">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+{% endwith %}
+
+<script src="{% static 'js/main.js' %}" defer></script>
+<script>
+(function () {
+  var portal = document.getElementById('portal');
+  var openBtn = document.getElementById('portal-open');
+  function setOpen(open) {
+    portal.classList.toggle('is-nav-open', open);
+    openBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+  openBtn.addEventListener('click', function () { setOpen(true); });
+  document.querySelectorAll('[data-portal-close]').forEach(function (el) {
+    el.addEventListener('click', function () { setOpen(false); });
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setOpen(false); });
+})();
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -10,6 +10,7 @@ urlpatterns = [
     path('', views.dashboard, name='dashboard'),
     path('signup/', views.signup, name='signup'),
     path('profile/', views.profile, name='profile'),
+    path('certificates/', views.certificates, name='certificates'),
     path('login/', auth_views.LoginView.as_view(
         template_name='accounts/login.html', authentication_form=EmailLoginForm,
         redirect_authenticated_user=True, extra_context={'crumbs': [('Log in', None)]},

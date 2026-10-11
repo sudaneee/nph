@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'learning/portal_base.html' %}
 {% load icons %}
 
 {% block seo_title %}My Learning — {{ site_settings.site_name }}{% endblock %}
@@ -8,14 +8,7 @@
 
 <section class="section-pad">
   <div class="container">
-    <div class="flex-between" style="flex-wrap: wrap; gap: 1rem;">
-      <p>Hello, <strong>{{ user.first_name|default:user.email }}</strong></p>
-      <div class="flex gap-sm" style="flex-wrap: wrap;">
-        <a href="{% url 'learning:course_list' %}" class="btn btn-outline btn-sm">Browse courses</a>
-        <a href="{% url 'accounts:profile' %}" class="btn btn-outline btn-sm">Profile</a>
-        <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button type="submit" class="btn btn-ghost btn-sm">Log out</button></form>
-      </div>
-    </div>
+    <p>Hello, <strong>{{ user.first_name|default:user.email }}</strong> — welcome back.</p>
 
     {% if rows %}
     <div class="dash-list">

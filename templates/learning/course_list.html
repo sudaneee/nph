@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends user.is_authenticated|yesno:'learning/portal_base.html,base.html' %}
 {% load icons humanize %}
 
 {% block seo_title %}Online Courses — {{ site_settings.site_name }}{% endblock %}
