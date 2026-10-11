@@ -5,7 +5,7 @@ from django.contrib.sitemaps.views import sitemap
 from django.urls import path, include
 from django.views.generic import TemplateView
 
-from sitecore.sitemaps import StaticViewSitemap, ServiceSitemap, ProgramSitemap, BlogPostSitemap
+from sitecore.sitemaps import StaticViewSitemap, ServiceSitemap, ProgramSitemap, BlogPostSitemap, CourseSitemap
 from programs.urls import opportunity_urlpatterns
 
 sitemaps = {
@@ -13,6 +13,7 @@ sitemaps = {
     'services': ServiceSitemap,
     'programs': ProgramSitemap,
     'blog': BlogPostSitemap,
+    'courses': CourseSitemap,
 }
 
 urlpatterns = [
@@ -25,6 +26,9 @@ urlpatterns = [
     path('opportunities/', include((opportunity_urlpatterns, 'programs'), namespace='opportunities')),
     path('insights/', include('blog.urls')),
     path('contact/', include('contact.urls')),
+    path('courses/', include('learning.urls')),
+    path('account/', include('accounts.urls')),
+    path('payments/', include('payments.urls')),
 
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),
     path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain'), name='robots'),

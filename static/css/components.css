@@ -94,6 +94,14 @@
   transition: right var(--dur-med) var(--ease-premium);
 }
 .main-nav__list a:not(.btn):hover::after { right: 0; }
+.main-nav__list > li { flex-shrink: 0; }
+.main-nav__list .icon { flex-shrink: 0; }
+@media (min-width: 1081px) and (max-width: 1320px) {
+  .main-nav { gap: var(--space-sm); }
+  .main-nav__list { gap: 1.1rem; }
+  .main-nav__list a:not(.btn) { font-size: 0.88rem; }
+  .main-nav__list .btn { padding: 0.75em 1.3em; }
+}
 
 .nav-toggle {
   display: none;
@@ -102,7 +110,7 @@
 }
 .nav-toggle .icon { width: 26px; height: 26px; }
 
-@media (max-width: 900px) {
+@media (max-width: 1080px) {
   .main-nav {
     position: fixed; inset: 0; top: 0;
     background: var(--color-cream);

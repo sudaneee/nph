@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load icons %}
+
+{% block seo_title %}Create an account — {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' with title="Create your account" lead="Sign up to enroll in courses and learn at your own pace." crumbs=crumbs %}
+
+<section class="section-pad">
+  <div class="container">
+    <div class="card auth-card">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
+        {{ form.non_field_errors }}
+        <div class="field-row">
+          {% include 'accounts/_field.html' with field=form.first_name %}
+          {% include 'accounts/_field.html' with field=form.last_name %}
+        </div>
+        {% include 'accounts/_field.html' with field=form.email %}
+        {% include 'accounts/_field.html' with field=form.phone %}
+        {% include 'accounts/_field.html' with field=form.password1 %}
+        {% include 'accounts/_field.html' with field=form.password2 %}
+        <button type="submit" class="btn btn-primary">Create account{% icon 'arrow-right' %}</button>
+      </form>
+      <p class="auth-switch">Already have an account? <a href="{% url 'accounts:login' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Log in</a></p>
+    </div>
+  </div>
+</section>
+{% endblock %}

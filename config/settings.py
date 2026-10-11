@@ -2,6 +2,7 @@
 Django settings for the Northpreneur Hub Ltd corporate website.
 """
 
+import sys
 from pathlib import Path
 from decouple import config, Csv
 
@@ -32,6 +33,9 @@ INSTALLED_APPS = [
     'blog',
     'contact',
     'pages',
+    'accounts',
+    'learning',
+    'payments',
 ]
 
 MIDDLEWARE = [
@@ -105,13 +109,23 @@ STORAGES = {
     },
 }
 
+# The manifest storage needs `collectstatic` to have run; tests render templates without it.
+if len(sys.argv) > 1 and sys.argv[1] == 'test':
+    STORAGES['staticfiles'] = {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'}
+
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Login redirects (used only for admin-adjacent auth flows, if any)
-LOGIN_URL = '/admin/login/'
+# Student accounts — sign in with email; admin keeps its own /admin/login/.
+AUTHENTICATION_BACKENDS = [
+    'accounts.backends.EmailBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'accounts:dashboard'
+LOGOUT_REDIRECT_URL = 'sitecore:home'
 
 # Security hardening (relaxed automatically by DEBUG where appropriate)
 SECURE_BROWSER_XSS_FILTER = True
@@ -125,14 +139,17 @@ SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=not DEBUG, cast=
 CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default=not DEBUG, cast=bool)
 SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
 
-# Email — contact form notifications (falls back to console backend in dev)
-EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
-EMAIL_HOST = config('EMAIL_HOST', default='')
+# Email — Gmail SMTP, same setup as the GIIA project (use a Gmail *app password*).
+# Falls back to printing emails to the console until EMAIL_HOST_USER is set.
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
 EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='no-reply@northpreneurhub.com.ng')
+EMAIL_BACKEND = config('EMAIL_BACKEND', default=(
+    'django.core.mail.backends.smtp.EmailBackend' if EMAIL_HOST_USER
+    else 'django.core.mail.backends.console.EmailBackend'))
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default=EMAIL_HOST_USER or 'no-reply@northpreneurhub.com.ng')
 CONTACT_NOTIFICATION_EMAIL = config('CONTACT_NOTIFICATION_EMAIL', default='hello@northpreneurhub.com.ng')
 
 # django-ckeditor-5 configuration — a curated toolbar, no image-upload endpoint
@@ -161,3 +178,15 @@ CKEDITOR_5_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 # Site-wide constants used by templates/context processor
 SITE_DOMAIN = config('SITE_DOMAIN', default='127.0.0.1:8000')
 SITE_PROTOCOL = config('SITE_PROTOCOL', default='http')
+
+# Zainpay — course payments, same integration as the GIIA project (see payments/zainpay.py).
+# ZAINPAY_BASE_URL: https://sandbox.zainpay.ng for testing, https://api.zainpay.ng live —
+# the keys must belong to the same environment as the Zainbox. Leave the keys blank and
+# paid courses show "payment not available" instead of failing.
+ZAINPAY_PUBLIC_KEY = config('ZAINPAY_PUBLIC_KEY', default='')
+ZAINPAY_SECRET_KEY = config('ZAINPAY_SECRET_KEY', default='')
+ZAINPAY_BASE_URL = config('ZAINPAY_BASE_URL', default='https://sandbox.zainpay.ng')
+ZAINPAY_ZAINBOX_CODE = config('ZAINPAY_ZAINBOX_CODE', default='')
+# The Zainbox's settlement account, searched to confirm payments. Optional: looked up
+# from Zainpay automatically when blank.
+ZAINPAY_ACCOUNT_NUMBER = config('ZAINPAY_ACCOUNT_NUMBER', default='')

@@ -48,6 +48,10 @@ ICONS = {
     'linkedin': '<rect x="3.5" y="3.5" width="17" height="17" rx="2.5"/><path d="M8 10v6.5M8 7.25v.01M12.25 16.5V10M12.25 12.75c0-1.6 1-2.75 2.5-2.75s2.75 1 2.75 3v3.5"/>',
     'youtube': '<rect x="2.75" y="5.5" width="18.5" height="13" rx="3.5"/><path d="M10.25 9.25v5.5l4.75-2.75Z" fill="currentColor" stroke="none"/>',
     'whatsapp': '<path d="M6.2 17.8 3.5 20.5l2.75-.7A8.6 8.6 0 1 0 3.5 12a8.5 8.5 0 0 0 1.2 4.4Z"/><path d="M9 9.7c0 3.6 2.7 6.3 6.3 6.3 1 0 1.35-.55 1.35-1.05 0-.4-.2-.6-.55-.85l-1.5-1c-.3-.2-.55-.15-.8.1l-.5.5c-1-.55-1.9-1.4-2.45-2.45l.5-.5c.25-.25.3-.5.1-.8l-1-1.5c-.25-.35-.45-.55-.85-.55-.5 0-1.1.35-1.1 1.3Z" fill="currentColor" stroke="none"/>',
+    'play': '<circle cx="12" cy="12" r="9.25"/><path d="M10 8.75v6.5l5.25-3.25Z" fill="currentColor" stroke="none"/>',
+    'lock': '<rect x="5" y="10.5" width="14" height="10" rx="1.5"/><path d="M8 10.5V7.75a4 4 0 0 1 8 0v2.75"/>',
+    'user': '<circle cx="12" cy="8" r="3.75"/><path d="M4.75 20.5a7.25 7.25 0 0 1 14.5 0"/>',
+    'book': '<path d="M12 6.5c-1.8-1.5-4.6-2-8.25-1.75V18.5c3.65-.25 6.45.25 8.25 1.75 1.8-1.5 4.6-2 8.25-1.75V4.75C16.6 4.5 13.8 5 12 6.5Z"/><path d="M12 6.5v13.75"/>',
 }
 
 ICON_CHOICES = sorted((key, key.replace('-', ' ').title()) for key in ICONS)

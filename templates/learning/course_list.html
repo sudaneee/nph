@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load icons humanize %}
+
+{% block seo_title %}Online Courses — {{ site_settings.site_name }}{% endblock %}
+{% block seo_description %}Self-paced online courses from Northpreneur Hub Ltd. Learn practical digital skills anytime, anywhere.{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' with title="Online Courses" lead="Self-paced courses you can start today — learn on your schedule and earn a certificate." crumbs=crumbs %}
+
+<section class="section-pad">
+  <div class="container">
+    {% if page_obj.object_list %}
+    <div class="card-grid" style="margin-top: 0;">
+      {% for course in page_obj %}
+      <article class="content-card course-card reveal">
+        <a href="{{ course.get_absolute_url }}" class="content-card__media" aria-hidden="true" tabindex="-1">
+          {% if course.thumbnail %}<img src="{{ course.thumbnail.url }}" alt="" loading="lazy">{% else %}<div class="course-card__placeholder">{% icon 'book' %}</div>{% endif %}
+        </a>
+        <div class="content-card__body">
+          <div class="content-card__meta">
+            <span class="badge">{{ course.get_level_display }}</span>
+            <span>{% icon 'play' 'icon' %} {{ course.lesson_count }} lesson{{ course.lesson_count|pluralize }}</span>
+          </div>
+          <h3><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></h3>
+          <p>{{ course.short_description }}</p>
+          <div class="content-card__footer">
+            {% if course.is_free %}<span class="course-card__price is-free">Free</span>{% else %}<span class="course-card__price">₦{{ course.price|intcomma }}</span>{% endif %}
+            {% if course.id in enrolled_ids %}
+            <a href="{% url 'learning:course_learn' course.slug %}" class="btn-ghost btn">Continue{% icon 'arrow-right' %}</a>
+            {% else %}
+            <a href="{{ course.get_absolute_url }}" class="btn-ghost btn">View course{% icon 'arrow-right' %}</a>
+            {% endif %}
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% include 'partials/pagination.html' %}
+    {% else %}
+    <div class="empty-state">{% icon 'book' %}<p>New courses are coming soon. Check back shortly.</p></div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

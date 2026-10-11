@@ -167,6 +167,7 @@ class Command(BaseCommand):
             ('About', '/about/', False),
             ('Services', '/services/', False),
             ('Programs', '/programs/', False),
+            ('Courses', '/courses/', False),
             ('Opportunities', '/opportunities/', False),
             ('Gallery', '/gallery/', False),
             ('Insights', '/insights/', False),

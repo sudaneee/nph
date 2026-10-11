@@ -67,6 +67,9 @@ programs/        Program (drives both /programs/ and /opportunities/ via program
 blog/            BlogPost, BlogCategory, BlogTag, Author
 contact/         ContactMessage, NewsletterSubscriber, forms
 pages/           AboutPage, LegalPage
+accounts/        student sign-up/login (email), Profile (phone), My Learning dashboard
+learning/        Course, Module, Lesson, Enrollment, progress, Quiz, Certificate
+payments/        Payment + Zainpay client (zainpay.py) and verification (services.py)
 templates/       base.html, partials/, home/sections/ (one partial per homepage section), gallery/, per-app templates
 static/css/      tokens.css (design system: green+gold palette) → base → components → animations → home/pages/gallery
 static/js/main.js  nav, reveal-on-scroll, counters, service/value tabs, FAQ accordion, gallery filter + lightbox, forms
@@ -89,6 +92,44 @@ outside to close) and category filtering. Backed by `sitecore.GalleryImage` +
 `sitecore.GalleryCategory` (both fully admin-manageable: upload, caption, categorize,
 feature, reorder, publish/unpublish). Featured images also drive the homepage's "Stories in
 Motion" preview strip.
+
+## Online courses (`/courses/`)
+
+Self-paced paid/free courses: students sign up at `/account/signup/` (email + phone),
+browse `/courses/`, pay once via Zainpay, then watch YouTube lessons, take quizzes and earn
+a printable certificate with a public verification link (`/courses/certificates/<code>/`).
+
+**Adding a course** (all in `/admin/ → Online Learning`):
+1. *Courses → Add*: title, price in whole Naira (0 = free), description, thumbnail, optional
+   YouTube trailer. Leave **Published** off until it's ready. Add modules in the inline table.
+2. *Modules → (module)*: add lessons — paste the YouTube link, tick **Free preview** for
+   lessons anyone may watch. Upload videos to YouTube as **Unlisted** (not Private — private
+   videos won't play embedded). Unlisted links can still be shared by a student who copies
+   them; move to Vimeo/Bunny Stream later if that becomes a problem.
+3. *Quizzes*: multiple-choice questions (2–4 options) + pass mark. A certificate is issued
+   once every lesson is marked complete **and** every published quiz is passed.
+4. Students can be enrolled by hand (e.g. bank-transfer payers) under *Enrollments*.
+
+**Zainpay** — same integration as the GIIA project (`payments/zainpay.py`). Set in `.env`:
+`ZAINPAY_PUBLIC_KEY`, `ZAINPAY_SECRET_KEY`, `ZAINPAY_BASE_URL` (`https://sandbox.zainpay.ng`
+or `https://api.zainpay.ng`) and `ZAINPAY_ZAINBOX_CODE`. Keys, base URL and Zainbox must all
+be the same environment — sandbox keys reject a live Zainbox with "Invalid ZainboxCode".
+Without keys, paid courses show "payment not available"; free courses still work.
+
+- Checkout is **bank transfer only**, amount sent in whole **naira**.
+- Access is granted only once the payment's reference shows up as a deposit in the
+  Zainbox's own transaction history (checked when the student returns from Zainpay), or
+  from a webhook carrying a valid `Zainpay-Signature`. The `status` Zainpay puts on the
+  return URL is never trusted. The settlement account searched is looked up from the
+  Zainbox automatically (or pin it with `ZAINPAY_ACCOUNT_NUMBER`).
+- Set the Zainbox callback/webhook URL in the Zainpay dashboard to
+  `https://<your-domain>/payments/webhook/zainpay/` so payments complete even if the
+  student closes the tab.
+- The student gets a confirmation email; stuck payments can be re-checked from
+  *Payments → "Re-check selected payments"*.
+
+**Email** — Gmail SMTP like GIIA: set `EMAIL_HOST_USER` and `EMAIL_HOST_PASSWORD` (a Gmail
+app password, not the account password). Until then emails print to the console.
 
 ## Known gaps to close before launch
 

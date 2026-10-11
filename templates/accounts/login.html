@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load icons %}
+
+{% block seo_title %}Log in — {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' with title="Welcome back" lead="Log in to continue learning." crumbs=crumbs %}
+
+<section class="section-pad">
+  <div class="container">
+    <div class="card auth-card">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
+        {% if form.non_field_errors %}<div class="alert alert-error">Incorrect email or password. Please try again.</div>{% endif %}
+        {% include 'accounts/_field.html' with field=form.username %}
+        {% include 'accounts/_field.html' with field=form.password %}
+        <p class="mb-md" style="font-size: var(--fs-small);"><a href="{% url 'accounts:password_reset' %}" class="btn-ghost">Forgot your password?</a></p>
+        <button type="submit" class="btn btn-primary">Log in{% icon 'arrow-right' %}</button>
+      </form>
+      <p class="auth-switch">New here? <a href="{% url 'accounts:signup' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Create an account</a></p>
+    </div>
+  </div>
+</section>
+{% endblock %}

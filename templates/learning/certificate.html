@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load icons %}
+
+{% block seo_title %}{{ seo_title }} — {{ site_settings.site_name }}{% endblock %}
+{% block seo_description %}Certificate of completion awarded to {{ cert.student_name }} for {{ cert.course_title }}.{% endblock %}
+
+{% block content %}
+<section class="section-pad">
+  <div class="container">
+    <div class="certificate">
+      <span class="logotype">NORTHPRENEUR<span>&nbsp;HUB</span></span>
+      <p class="certificate__eyebrow mt-md">Certificate of Completion</p>
+      <p class="text-muted">This certifies that</p>
+      <p class="certificate__name">{{ cert.student_name }}</p>
+      <p class="text-muted">has successfully completed the online course</p>
+      <p class="certificate__course">{{ cert.course_title }}</p>
+      <div class="certificate__meta">
+        <div><strong>{{ cert.issued_at|date:"F j, Y" }}</strong>Date issued</div>
+        <div><strong>{{ cert.code }}</strong>Certificate ID</div>
+        <div><strong>{{ site_settings.site_name }}</strong>Issued by</div>
+      </div>
+      <p class="certificate__verify mt-md">Verify at {{ verify_url }}</p>
+    </div>
+
+    <div class="certificate-actions">
+      {% if is_owner %}
+      <button type="button" class="btn btn-primary" onclick="window.print()">Download / Print (PDF)</button>
+      <a href="{% url 'accounts:dashboard' %}" class="btn btn-outline">Back to My Learning</a>
+      {% else %}
+      <p class="alert alert-success">{% icon 'shield' %} This certificate is valid and was issued by {{ site_settings.site_name }}.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

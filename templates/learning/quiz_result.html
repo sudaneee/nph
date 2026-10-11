@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load icons learning_extras %}
+
+{% block seo_title %}{{ seo_title }} — {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' with title=quiz.title crumbs=crumbs %}
+
+<section class="section-pad">
+  <div class="container container-narrow">
+    <div class="card text-center mb-lg">
+      <div class="quiz-score">{{ attempt.score }}%</div>
+      <p class="mt-xs">{{ correct }} of {{ questions|length }} correct · pass mark {{ quiz.pass_mark }}%</p>
+      {% if attempt.passed %}
+        <div class="alert alert-success mt-md">Well done — you passed!</div>
+        {% if completed_course and course.certificate_enabled %}
+          <a href="{% url 'learning:certificate' course.slug %}" class="btn btn-gold">{% icon 'award' %}Get your certificate</a>
+        {% elif next_quiz %}
+          <a href="{{ next_quiz.get_absolute_url }}" class="btn btn-primary">Next quiz: {{ next_quiz.title }}{% icon 'arrow-right' %}</a>
+        {% else %}
+          <a href="{% url 'learning:course_learn' course.slug %}" class="btn btn-primary">Continue course{% icon 'arrow-right' %}</a>
+        {% endif %}
+      {% else %}
+        <div class="alert alert-error mt-md">Not quite — review the lessons and try again.</div>
+        <div class="flex-center gap-sm" style="flex-wrap: wrap;">
+          <a href="{{ quiz.get_absolute_url }}" class="btn btn-primary">Retake quiz</a>
+          <a href="{% url 'learning:course_learn' course.slug %}" class="btn btn-outline">Back to lessons</a>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if attempt.passed %}
+    <h3 class="mb-md" style="font-size: 1.3rem;">Review</h3>
+    {% for q in questions %}
+    {% with chosen=answers|get_item:q.id %}
+    <div class="card quiz-question" style="padding: var(--space-md);">
+      <p class="mb-xs"><strong>{{ forloop.counter }}. {{ q.text|linebreaksbr }}</strong></p>
+      {% for key, label in q.options %}
+      <div class="quiz-option{% if key == q.correct_option %} is-correct{% elif key == chosen %} is-wrong{% endif %}">
+        {% if key == q.correct_option %}{% icon 'check' %}{% elif key == chosen %}{% icon 'close' %}{% else %}<span style="width:24px"></span>{% endif %}
+        <span>{{ label }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endwith %}
+    {% endfor %}
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

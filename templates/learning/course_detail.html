@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load icons humanize %}
+
+{% block seo_title %}{{ seo_title }} — {{ site_settings.site_name }}{% endblock %}
+{% block seo_description %}{{ seo_description }}{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' with title=course.title lead=course.short_description crumbs=crumbs %}
+
+<section class="section-pad">
+  <div class="container">
+    <div class="program-detail-grid course-detail-grid">
+      <div>
+        {% if course.preview_embed_url %}
+        <div class="video-frame mb-md">
+          <iframe src="{{ course.preview_embed_url }}" title="{{ course.title }} preview" loading="lazy"
+                  allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen
+                  referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+        {% elif course.thumbnail %}
+        <div class="service-detail-media mb-md"><img src="{{ course.thumbnail.url }}" alt="{{ course.title }}"></div>
+        {% endif %}
+
+        {% if course.outcomes %}
+        <div class="card mb-md" style="padding: var(--space-md);">
+          <h3 style="font-size: 1.3rem;">What you'll learn</h3>
+          <ul class="outcome-grid">
+            {% for item in course.outcomes %}<li>{% icon 'check' %}<span>{{ item }}</span></li>{% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        <div class="rich-content">{{ course.full_description|safe }}</div>
+
+        {% if course.requirement_list %}
+        <h3 class="mt-xl mb-xs" style="font-size: 1.3rem;">Requirements</h3>
+        <ul class="feature-list">
+          {% for item in course.requirement_list %}<li>{% icon 'check' %}<span>{{ item }}</span></li>{% endfor %}
+        </ul>
+        {% endif %}
+
+        <h3 class="mt-xl mb-xs" style="font-size: 1.3rem;">Course content</h3>
+        <p class="text-muted mb-md" style="font-size: var(--fs-small);">
+          {{ lesson_count }} lesson{{ lesson_count|pluralize }}{% if total_minutes %} · {{ total_minutes }} min total{% endif %}{% if quizzes %} · {{ quizzes|length }} quiz{{ quizzes|length|pluralize:"zes" }}{% endif %}
+        </p>
+        <div class="curriculum">
+          {% for module in modules %}
+          <div class="curriculum__module">
+            <h4>{{ module.title }} <span>{{ module.lessons.all|length }} lesson{{ module.lessons.all|length|pluralize }}</span></h4>
+            {% for lesson in module.lessons.all %}
+              {% if enrollment or lesson.is_free_preview %}
+              <a href="{{ lesson.get_absolute_url }}" class="curriculum__item">{% icon 'play' %}<span>{{ lesson.title }}</span>
+                <span class="meta">{% if lesson.is_free_preview and not enrollment %}<span class="badge">Preview</span> {% endif %}{% if lesson.duration_minutes %}{{ lesson.duration_minutes }} min{% endif %}</span></a>
+              {% else %}
+              <div class="curriculum__item">{% icon 'lock' %}<span>{{ lesson.title }}</span>
+                <span class="meta">{% if lesson.duration_minutes %}{{ lesson.duration_minutes }} min{% endif %}</span></div>
+              {% endif %}
+            {% endfor %}
+          </div>
+          {% endfor %}
+          {% for quiz in quizzes %}
+          <div class="curriculum__module">
+            <div class="curriculum__item">{% icon 'award' %}<span>{{ quiz.title }}</span><span class="meta">{{ quiz.question_count }} question{{ quiz.question_count|pluralize }}</span></div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <aside class="sidebar-card">
+        {% if course.is_free %}<div class="course-price-tag">Free</div>{% else %}<div class="course-price-tag">₦{{ course.price|intcomma }}</div>
+        <p class="text-muted mt-xs" style="font-size: var(--fs-small);">One-time payment · lifetime access</p>{% endif %}
+
+        <ul class="program-meta-list mt-md">
+          <li>{% icon 'chart' %}Level: {{ course.get_level_display }}</li>
+          <li>{% icon 'play' %}{{ lesson_count }} video lesson{{ lesson_count|pluralize }}</li>
+          {% if course.duration_text %}<li>{% icon 'clock' %}{{ course.duration_text }}</li>{% endif %}
+          {% if course.instructor_name %}<li>{% icon 'user' %}Instructor: {{ course.instructor_name }}</li>{% endif %}
+          <li>{% icon 'globe' %}Self-paced, 100% online</li>
+          {% if course.certificate_enabled %}<li>{% icon 'award' %}Certificate of completion</li>{% endif %}
+        </ul>
+
+        {% if enrollment %}
+          <a href="{% url 'learning:course_learn' course.slug %}" class="btn btn-primary">Continue learning{% icon 'arrow-right' %}</a>
+        {% elif user.is_authenticated %}
+          <form method="post" action="{% url 'payments:checkout' course.slug %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">{% if course.is_free %}Enroll for free{% else %}Enroll now — ₦{{ course.price|intcomma }}{% endif %}{% icon 'arrow-right' %}</button>
+          </form>
+          {% if not course.is_free %}<p class="secure-note">{% icon 'shield' %}Secure bank transfer via Zainpay</p>{% endif %}
+        {% else %}
+          <a href="{% url 'accounts:signup' %}?next={{ request.path|urlencode }}" class="btn btn-primary">Sign up to enroll{% icon 'arrow-right' %}</a>
+          <p class="auth-switch" style="margin-top: var(--space-sm);">Have an account? <a href="{% url 'accounts:login' %}?next={{ request.path|urlencode }}">Log in</a></p>
+        {% endif %}
+      </aside>
+    </div>
+  </div>
+</section>
+{% endblock %}

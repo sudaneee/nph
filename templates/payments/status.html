@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load icons humanize %}
+
+{% block seo_title %}Payment status — {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' with title="Payment status" crumbs=crumbs %}
+
+<section class="section-pad">
+  <div class="container">
+    <div class="card auth-card text-center">
+      {% if cancelled and status == 'pending' %}
+        <div class="alert alert-error">Your payment for “{{ payment.course.title }}” was not completed.</div>
+        <p class="mb-md">You haven't been charged. You can try again whenever you're ready.</p>
+        <a href="{{ payment.course.get_absolute_url }}" class="btn btn-primary">Back to course</a>
+        <p class="auth-switch">Already paid? <a href="{{ request.path }}">Check again</a></p>
+      {% elif status == 'failed' %}
+        <div class="alert alert-error">Your payment for “{{ payment.course.title }}” did not go through.</div>
+        <p class="mb-md">No access was granted. If you were charged, contact us with reference <strong>{{ payment.reference }}</strong>.</p>
+        <a href="{{ payment.course.get_absolute_url }}" class="btn btn-primary">Back to course</a>
+      {% else %}
+        <p class="mb-xs">We haven't received confirmation of your payment of <strong>₦{{ payment.amount|intcomma }}</strong> for “{{ payment.course.title }}” yet.</p>
+        <p class="text-muted mb-md" style="font-size: var(--fs-small);">If you completed the payment, this usually takes a few seconds. Reference: {{ payment.reference }}</p>
+        <a href="{{ request.path }}" class="btn btn-primary">Check again</a>
+        <p class="auth-switch"><a href="{{ payment.course.get_absolute_url }}">Back to course</a> · <a href="{% url 'contact:contact' %}">Contact support</a></p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load icons %}
+
+{% block seo_title %}My Learning — {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+{% include 'partials/page_header.html' with title="My Learning" lead="Pick up where you left off." crumbs=crumbs %}
+
+<section class="section-pad">
+  <div class="container">
+    <div class="flex-between" style="flex-wrap: wrap; gap: 1rem;">
+      <p>Hello, <strong>{{ user.first_name|default:user.email }}</strong></p>
+      <div class="flex gap-sm" style="flex-wrap: wrap;">
+        <a href="{% url 'learning:course_list' %}" class="btn btn-outline btn-sm">Browse courses</a>
+        <a href="{% url 'accounts:profile' %}" class="btn btn-outline btn-sm">Profile</a>
+        <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button type="submit" class="btn btn-ghost btn-sm">Log out</button></form>
+      </div>
+    </div>
+
+    {% if rows %}
+    <div class="dash-list">
+      {% for enrollment, progress in rows %}
+      {% with course=enrollment.course %}
+      <article class="card dash-row">
+        <div class="dash-row__thumb">
+          {% if course.thumbnail %}<img src="{{ course.thumbnail.url }}" alt="">{% else %}<div class="course-card__placeholder">{% icon 'book' %}</div>{% endif %}
+        </div>
+        <div>
+          <h3 style="font-size: 1.2rem;"><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></h3>
+          <div class="mt-xs">
+            <div class="progress-label"><span>{% if enrollment.completed_at %}Completed {{ enrollment.completed_at|date:"M j, Y" }}{% else %}In progress{% endif %}</span><span>{{ progress }}%</span></div>
+            <div class="progress" role="progressbar" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100"><div class="progress__bar" style="width: {{ progress }}%;"></div></div>
+          </div>
+        </div>
+        <div class="dash-row__actions">
+          <a href="{% url 'learning:course_learn' course.slug %}" class="btn btn-primary btn-sm">{% if progress %}Continue{% else %}Start{% endif %}{% icon 'arrow-right' %}</a>
+          {% if enrollment.certificate %}
+          <a href="{{ enrollment.certificate.get_absolute_url }}" class="btn btn-outline-gold btn-sm">{% icon 'award' %}Certificate</a>
+          {% elif enrollment.completed_at and course.certificate_enabled %}
+          <a href="{% url 'learning:certificate' course.slug %}" class="btn btn-outline-gold btn-sm">{% icon 'award' %}Get certificate</a>
+          {% endif %}
+        </div>
+      </article>
+      {% endwith %}
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">{% icon 'book' %}<p>You haven't enrolled in any courses yet.</p>
+      <a href="{% url 'learning:course_list' %}" class="btn btn-primary mt-md">Browse courses{% icon 'arrow-right' %}</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
