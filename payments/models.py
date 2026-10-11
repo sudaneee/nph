@@ -20,7 +20,8 @@ class Payment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='payments')
     course = models.ForeignKey(Course, on_delete=models.PROTECT, related_name='payments')
     reference = models.CharField(max_length=40, unique=True, default=_reference, editable=False)
-    amount = models.PositiveIntegerField(help_text='Naira, as charged at checkout.')
+    amount = models.PositiveIntegerField(help_text='Naira charged at checkout, including the Zainpay fee.')
+    course_price = models.PositiveIntegerField(default=0, help_text='Naira — the course price before the Zainpay fee.')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending', db_index=True)
     gateway_response = models.JSONField(default=dict, blank=True,
                                         help_text='Last verification response from Zainpay.')
@@ -36,3 +37,12 @@ class Payment(models.Model):
     @property
     def amount_kobo(self):
         return self.amount * 100
+
+    @property
+    def minimum_kobo(self):
+        """
+        Least deposit that counts as paid in full: the course price itself. Zainpay
+        may report the deposit before or after deducting its fee, and either way a
+        genuine payment of `amount` covers the course price.
+        """
+        return (self.course_price or self.amount) * 100

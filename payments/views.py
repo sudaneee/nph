@@ -13,6 +13,7 @@ from django.views.decorators.http import require_POST
 from accounts.models import Profile
 from learning.models import Course, Enrollment
 from . import zainpay
+from .fees import total_with_zainpay_charge
 from .models import Payment
 from .services import apply_deposit, confirm_payment
 
@@ -44,7 +45,8 @@ def checkout(request, slug):
         messages.info(request, 'Please add your phone number — it is required for payment.')
         return redirect(f"{reverse('accounts:profile')}?next={course.get_absolute_url()}")
 
-    payment = Payment.objects.create(user=request.user, course=course, amount=course.price)
+    payment = Payment.objects.create(user=request.user, course=course, course_price=course.price,
+                                     amount=total_with_zainpay_charge(course.price))
     callback_url = request.build_absolute_uri(reverse('payments:callback', kwargs={'reference': payment.reference}))
     try:
         checkout_url = zainpay.initialize_checkout(

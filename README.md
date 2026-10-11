@@ -117,6 +117,9 @@ be the same environment — sandbox keys reject a live Zainbox with "Invalid Zai
 Without keys, paid courses show "payment not available"; free courses still work.
 
 - Checkout is **bank transfer only**, amount sent in whole **naira**.
+- Zainpay's 1.5% + ₦50 charge is passed to the student, grossed up like GIIA's admission
+  fee (`payments/fees.py`) so Northpreneur still nets the full course price — e.g. a
+  ₦15,000 course costs the student ₦15,280. The course page shows the fee before payment.
 - Access is granted only once the payment's reference shows up as a deposit in the
   Zainbox's own transaction history (checked when the student returns from Zainpay), or
   from a webhook carrying a valid `Zainpay-Signature`. The `status` Zainpay puts on the

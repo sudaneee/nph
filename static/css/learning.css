@@ -121,3 +121,5 @@ a.curriculum__item:hover { background: var(--color-primary-tint); }
 .certificate__verify { font-size: var(--fs-xs); color: var(--color-gray); max-width: 100%; overflow-wrap: anywhere; }
 .certificate-actions .alert { display: inline-flex; align-items: center; gap: 0.5em; margin: 0; }
 .certificate-actions .alert .icon { width: 18px; height: 18px; flex-shrink: 0; }
+.fee-note { font-size: var(--fs-xs); color: var(--color-gray); margin-top: 0.3rem; }
+.fee-note strong { color: var(--color-dark); }

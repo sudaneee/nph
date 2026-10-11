@@ -35,7 +35,9 @@ class AccessTests(TestCase):
 
     def test_catalog_and_detail_are_public(self):
         self.assertContains(self.client.get(reverse('learning:course_list')), '₦5,000')
-        self.assertContains(self.client.get(self.course.get_absolute_url()), 'Sign up to enroll')
+        resp = self.client.get(self.course.get_absolute_url())
+        self.assertContains(resp, 'Sign up to enroll')
+        self.assertContains(resp, '+ ₦127 payment processing fee')  # ₦5,000 course → ₦5,127 total
 
     def test_unpublished_course_hidden(self):
         self.course.published = False

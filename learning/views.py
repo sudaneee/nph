@@ -7,6 +7,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
+from payments.fees import processing_fee, total_with_zainpay_charge
 from .models import Course, Lesson, Enrollment, LessonProgress, Quiz, QuizAttempt, Certificate
 
 
@@ -47,6 +48,8 @@ def course_detail(request, slug):
         'course': course,
         'modules': _curriculum(course),
         'enrollment': _enrollment(request, course),
+        'checkout_total': total_with_zainpay_charge(course.price),
+        'processing_fee': processing_fee(course.price),
         'lesson_count': lessons.count(),
         'total_minutes': lessons.aggregate(m=Sum('duration_minutes'))['m'],
         'quizzes': course.quizzes.filter(published=True).annotate(question_count=Count('questions')),

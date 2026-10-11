@@ -11,6 +11,7 @@ from accounts.models import Profile
 from learning.models import Enrollment
 from learning.tests import make_course
 from . import zainpay
+from .fees import processing_fee, total_with_zainpay_charge
 from .models import Payment
 
 User = get_user_model()
@@ -52,7 +53,8 @@ class CheckoutTests(TestCase):
         body = post.call_args.kwargs['json']
         self.assertEqual(url, 'https://sandbox.zainpay.ng/zainbox/card/initialize/payment')
         self.assertEqual(post.call_args.kwargs['headers']['Authorization'], 'Bearer pk_test')
-        self.assertEqual(body['amount'], '15000')  # naira, plain string — not kobo
+        self.assertEqual(body['amount'], '15280')  # naira incl. 1.5% + ₦50, plain string — not kobo
+        self.assertEqual((payment.course_price, payment.amount), (15000, 15280))
         self.assertEqual(body['paymentChannels'], ['bank_transfer'])
         self.assertEqual(body['zainboxCode'], 'box123')
         self.assertEqual(body['txnRef'], payment.reference)
@@ -102,11 +104,11 @@ class CallbackTests(TestCase):
     def setUp(self):
         self.course, _, _ = make_course(price=15000)
         self.user = User.objects.create_user('u', email='u@example.com', password='pw', first_name='Amina')
-        self.payment = Payment.objects.create(user=self.user, course=self.course, amount=15000)
+        self.payment = Payment.objects.create(user=self.user, course=self.course, course_price=15000, amount=15280)
         self.callback = reverse('payments:callback', kwargs={'reference': self.payment.reference})
 
     def test_enrolls_when_deposit_is_in_zainbox_history(self):
-        with mock.patch('requests.get', return_value=history(deposit('other', 1), deposit(self.payment.reference, 1500000))) as get,                 self.captureOnCommitCallbacks(execute=True):
+        with mock.patch('requests.get', return_value=history(deposit('other', 1), deposit(self.payment.reference, 1528000))) as get,                 self.captureOnCommitCallbacks(execute=True):
             resp = self.client.get(self.callback + f'?txnRef={self.payment.reference}&status=success')
         get.assert_called_once()
         self.assertEqual(get.call_args.args[0],
@@ -118,7 +120,7 @@ class CallbackTests(TestCase):
         self.assertEqual(Enrollment.objects.get().source, 'paid')
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn(self.payment.reference, mail.outbox[0].body)
-        self.assertIn('₦15,000', mail.outbox[0].body)
+        self.assertIn('₦15,280', mail.outbox[0].body)
 
     def test_status_param_alone_grants_nothing(self):
         with mock.patch('requests.get', return_value=history()):
@@ -140,6 +142,13 @@ class CallbackTests(TestCase):
             self.client.get(self.callback)
         self.assertFalse(Enrollment.objects.exists())
 
+    def test_deposit_reported_net_of_zainpay_fee_still_counts(self):
+        net = 1528000 - (round(15280 * 0.015) + 50) * 100  # what we keep after Zainpay's cut
+        with mock.patch('requests.get', return_value=history(deposit(self.payment.reference, net))):
+            self.client.get(self.callback)
+        self.payment.refresh_from_db()
+        self.assertEqual(self.payment.status, 'success')
+
     def test_underpayment_fails(self):
         with mock.patch('requests.get', return_value=history(deposit(self.payment.reference, 150000))):
             self.client.get(self.callback)
@@ -155,7 +164,7 @@ class CallbackTests(TestCase):
         self.assertEqual(self.payment.status, 'pending')
 
     def test_callback_accepts_server_to_server_post(self):
-        with mock.patch('requests.get', return_value=history(deposit(self.payment.reference, 1500000))):
+        with mock.patch('requests.get', return_value=history(deposit(self.payment.reference, 1528000))):
             resp = self.client.post(self.callback)
         self.assertEqual(resp.status_code, 302)
         self.assertTrue(Enrollment.objects.exists())
@@ -164,7 +173,7 @@ class CallbackTests(TestCase):
     def test_account_number_looked_up_from_zainbox_when_not_set(self):
         zainpay.zainbox_account_number.__dict__.pop('_cached', None)
         accounts = http_response({'code': '00', 'data': [{'bankAccount': '9096059840', 'name': 'Internal Settlement Account'}]})
-        with mock.patch('requests.get', side_effect=[accounts, history(deposit(self.payment.reference, 1500000))]) as get:
+        with mock.patch('requests.get', side_effect=[accounts, history(deposit(self.payment.reference, 1528000))]) as get:
             self.client.get(self.callback)
         zainpay.zainbox_account_number.__dict__.pop('_cached', None)
         self.assertEqual(get.call_args_list[0].args[0], 'https://sandbox.zainpay.ng/zainbox/virtual-accounts/box123')
@@ -177,7 +186,7 @@ class WebhookTests(TestCase):
     def setUp(self):
         self.course, _, _ = make_course(price=15000)
         self.user = User.objects.create_user('u', email='u@example.com', password='pw')
-        self.payment = Payment.objects.create(user=self.user, course=self.course, amount=15000)
+        self.payment = Payment.objects.create(user=self.user, course=self.course, course_price=15000, amount=15280)
         self.url = reverse('payments:webhook')
 
     def post(self, body, sign=True, signature=None):
@@ -217,3 +226,19 @@ class WebhookTests(TestCase):
 
     def test_unknown_reference_ignored(self):
         self.assertEqual(self.post(self.event(ref='NOPE')).json(), {'status': 'ignored'})
+
+
+class FeeTests(TestCase):
+    def test_gross_up_leaves_full_course_price_after_zainpay_cut(self):
+        for price in (500, 1000, 5000, 15000, 49999, 250000):
+            total = total_with_zainpay_charge(price)
+            zainpay_cut = total * 0.015 + 50
+            self.assertGreaterEqual(total - zainpay_cut, price, price)
+            self.assertLess(total - zainpay_cut, price + 1, price)  # rounded up by under ₦1
+            self.assertEqual(processing_fee(price), total - price)
+
+    def test_known_values_and_free(self):
+        self.assertEqual(total_with_zainpay_charge(15000), 15280)
+        self.assertEqual(processing_fee(15000), 280)
+        self.assertEqual(total_with_zainpay_charge(0), 0)
+        self.assertEqual(processing_fee(0), 0)

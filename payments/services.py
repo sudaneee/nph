@@ -26,9 +26,9 @@ def apply_deposit(payment, paid_kobo, details):
         if payment.status == 'success':
             return payment.status
         payment.gateway_response = details or {}
-        if paid_kobo < payment.amount_kobo:
-            logger.error('Zainpay underpayment on %s: paid %s kobo, expected %s',
-                         payment.reference, paid_kobo, payment.amount_kobo)
+        if paid_kobo < payment.minimum_kobo:
+            logger.error('Zainpay underpayment on %s: paid %s kobo, expected at least %s',
+                         payment.reference, paid_kobo, payment.minimum_kobo)
             payment.status = 'failed'
             payment.save(update_fields=['status', 'gateway_response'])
             return payment.status
@@ -66,7 +66,8 @@ def send_payment_confirmation_email(payment):
             subject=f'Payment confirmed — {payment.course.title}',
             message=(
                 f'Dear {user.get_full_name() or user.email},\n\n'
-                f'We have received your payment of ₦{payment.amount:,} for "{payment.course.title}".\n'
+                f'We have received your payment of ₦{payment.amount:,} for "{payment.course.title}" '
+                f'(course ₦{payment.course_price or payment.amount:,} + payment processing fee).\n'
                 f'Payment reference: {payment.reference}\n\n'
                 f'You can start learning right away:\n{course_url}\n\n'
                 'Northpreneur Hub Ltd'

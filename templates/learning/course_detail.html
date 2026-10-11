@@ -68,7 +68,8 @@
 
       <aside class="sidebar-card">
         {% if course.is_free %}<div class="course-price-tag">Free</div>{% else %}<div class="course-price-tag">₦{{ course.price|intcomma }}</div>
-        <p class="text-muted mt-xs" style="font-size: var(--fs-small);">One-time payment · lifetime access</p>{% endif %}
+        <p class="text-muted mt-xs" style="font-size: var(--fs-small);">One-time payment · lifetime access</p>
+        <p class="fee-note">+ ₦{{ processing_fee|intcomma }} payment processing fee · <strong>₦{{ checkout_total|intcomma }} total</strong></p>{% endif %}
 
         <ul class="program-meta-list mt-md">
           <li>{% icon 'chart' %}Level: {{ course.get_level_display }}</li>
@@ -84,7 +85,7 @@
         {% elif user.is_authenticated %}
           <form method="post" action="{% url 'payments:checkout' course.slug %}">
             {% csrf_token %}
-            <button type="submit" class="btn btn-primary">{% if course.is_free %}Enroll for free{% else %}Enroll now — ₦{{ course.price|intcomma }}{% endif %}{% icon 'arrow-right' %}</button>
+            <button type="submit" class="btn btn-primary">{% if course.is_free %}Enroll for free{% else %}Enroll now — ₦{{ checkout_total|intcomma }}{% endif %}{% icon 'arrow-right' %}</button>
           </form>
           {% if not course.is_free %}<p class="secure-note">{% icon 'shield' %}Secure bank transfer via Zainpay</p>{% endif %}
         {% else %}
