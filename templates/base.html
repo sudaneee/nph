@@ -1,9 +1,21 @@
-{% load static icons %}<!DOCTYPE html>
+{% load static icons site_extras %}<!DOCTYPE html>
 <html lang="en" class="no-js">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-{% include 'partials/seo_meta.html' %}
+{% comment %}SEO tags live here rather than in an included partial: Django never applies a child
+template's block overrides inside included files, so per-page titles/robots were ignored.{% endcomment %}
+<title>{% block seo_title %}{{ site_settings.default_seo_title|default:site_settings.site_name }}{% endblock %}</title>
+<meta name="description" content="{% block seo_description %}{{ site_settings.default_meta_description|default:site_settings.tagline }}{% endblock %}">
+{% block seo_robots %}<meta name="robots" content="index, follow">{% endblock %}
+{% block seo_canonical %}{% endblock %}
+
+<meta property="og:site_name" content="{{ site_settings.site_name }}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{% block og_title %}{{ site_settings.default_seo_title|default:site_settings.site_name }}{% endblock %}">
+<meta property="og:description" content="{% block og_description %}{{ site_settings.default_meta_description|default:site_settings.tagline }}{% endblock %}">
+{% block og_image %}{% if site_settings.default_og_image %}<meta property="og:image" content="{{ site_settings.default_og_image.url|absolute_url:request }}">{% endif %}{% endblock %}
+<meta name="twitter:card" content="summary_large_image">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
