@@ -36,3 +36,10 @@ class SeoBlockTests(TestCase):
         self.assertNotIn('{%', h)
         self.assertNotIn('{#', h)
         self.assertNotIn('SEO tags live here', h)
+
+    def test_homepage_title_uses_admin_default_when_set(self):
+        from sitecore.models import SiteSettings
+        s = SiteSettings.load()
+        s.default_seo_title = 'Northpreneur Hub | Digital Skills'
+        s.save()
+        self.assertIn('<title>Northpreneur Hub | Digital Skills</title>', head(self.client.get('/')))

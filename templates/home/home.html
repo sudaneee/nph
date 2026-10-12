@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block seo_title %}{{ site_settings.site_name }} — {{ site_settings.tagline }}{% endblock %}
+{% block seo_title %}{% if site_settings.default_seo_title %}{{ site_settings.default_seo_title }}{% else %}{{ site_settings.site_name }} — {{ site_settings.tagline }}{% endif %}{% endblock %}
 {% block seo_description %}{{ site_settings.default_meta_description|default:site_settings.tagline }}{% endblock %}
 
 {% block content %}
